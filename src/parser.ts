@@ -1,19 +1,33 @@
-import { fromNullable } from "fp-ts/lib/Option";
 import P from "parsimmon";
 
-const createCreateLanguage = (content: string) => P.createLanguage({
+const LaTeX = P.createLanguage({
     Environment(r) {
-        const environments = fromNullable(content.match(/\\begin\{.*?\}/g))
-            .getOrElse([]).map((e) => e.replace(/\\begin\{|\}/g, ""));
+        let name = "";
+        const BeginEnvironment = P((input, i) => {
+            const m = input.slice(i).match(/^\\begin\{(.*?)\}/);
+            if (m !== null) {
+                name = m[1];
+                return P.makeSuccess(i + m[0].length, m[1]);
+            } else {
+                return P.makeFailure(i, "Not a environment");
+            }
+        });
+        const EndEnvironment = P((input, i) => {
+            const m = input.slice(i).match(new RegExp(`^\\\\end\\{${name}\\}`));
+            if (m !== null) {
+                return P.makeSuccess(i + m[0].length, null);
+            } else {
+                return P.makeFailure(i, "Not a environment");
+            }
+        });
         const option = r.Program.wrap(P.string("["), P.string("]"));
         const argument = r.Program.wrap(P.string("{"), P.string("}"));
-        return P.alt.apply(null, environments.map((environment) => P.seqObj<any>(
-            ["name", P.succeed(environment)],
-            P.string(`\\begin{${environment}}`),
+        return P.seqObj<any>(
+            ["name", BeginEnvironment],
             ["arguments", P.alt(option, argument).many()],
             ["body", r.Program],
-            P.string(`\\end{${environment}}`),
-        ))).node("environment");
+            EndEnvironment,
+        ).node("environment");
     },
     Verbatim() {
         return P.alt(P.regexp(/\\verb\|(.*?)\|/, 1), P.regexp(/\\verb*\|(.*?)\|/, 1)).node("verbatim");
@@ -55,6 +69,9 @@ const createCreateLanguage = (content: string) => P.createLanguage({
     },
 });
 
-export const parse = (content: string): P.Node<"program", any> => {
-    return createCreateLanguage(content).Program.tryParse(content);
-};
+process.stdout.write(JSON.stringify(LaTeX.Program.tryParse(`
+\\documentclass{article}
+\\begin{document}
+Hello
+\\end{document}
+`), null, 2));
