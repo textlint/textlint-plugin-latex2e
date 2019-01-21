@@ -340,7 +340,7 @@ export const TxtAST = {
           case "program":
             this.update({
               ...tmp,
-              type: this.isRoot ? ASTNodeTypes.Document : ASTNodeTypes.Html,
+              type: this.isRoot ? ASTNodeTypes.Document : ASTNodeTypes.Paragraph,
               children: node.value
             });
             break;
