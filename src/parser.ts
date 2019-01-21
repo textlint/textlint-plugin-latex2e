@@ -191,13 +191,13 @@ export const TxtAST = {
   parse(text: string) {
     const ast = LaTeX.Program.tryParse(text);
     return traverse(ast).map(function(node) {
-      if (this.parent && this.parent.node.isDocument && node[0] && node[0].loc) {
-        console.log(node);
+      if (this.parent && this.parent.node.isDocument && JSON.stringify(this.parent.node.children) === JSON.stringify(node)) {
         const children = [
           {
             ...this.parent.node,
             type: ASTNodeTypes.Paragraph,
-            children: [node[0]]
+            children: [node[0]],
+            isDocument: false
           }
         ];
         for (const child of node.slice(1)) {
