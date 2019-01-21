@@ -17,4 +17,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 const LaTeXProcessor_1 = require("./LaTeXProcessor");
-exports.Processor = LaTeXProcessor_1.LaTeXProcessor;
+const creator = { Processor: LaTeXProcessor_1.LaTeXProcessor };
+exports.default = creator;
