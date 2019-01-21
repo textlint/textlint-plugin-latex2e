@@ -332,6 +332,7 @@ export const TxtAST = {
               default:
                 this.update({
                   ...tmp,
+                  type: ASTNodeTypes.Html,
                   children: node.value.arguments.concat(node.value.body)
                 });
             }
@@ -339,7 +340,7 @@ export const TxtAST = {
           case "program":
             this.update({
               ...tmp,
-              type: this.isRoot ? ASTNodeTypes.Document : "Unknown",
+              type: this.isRoot ? ASTNodeTypes.Document : ASTNodeTypes.Html,
               children: node.value
             });
             break;
