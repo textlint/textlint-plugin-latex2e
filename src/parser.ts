@@ -133,7 +133,13 @@ export const LaTeX = Parsimmon.createLanguage({
     ).node("environment");
   },
   Macro(r) {
-    const option = r.Program.wrap(Parsimmon.string("["), Parsimmon.string("]"));
+    const option = Parsimmon.noneOf("]")
+      .many()
+      .wrap(Parsimmon.string("["), Parsimmon.string("]"))
+      .map((_: any) => {
+        const opt = _.join();
+        return r.Program.tryParse(opt);
+      }); // Program eats ] character...
     const argument = r.Program.wrap(
       Parsimmon.string("{"),
       Parsimmon.string("}")
@@ -142,7 +148,7 @@ export const LaTeX = Parsimmon.createLanguage({
       [
         "name",
         Parsimmon.regexp(
-          /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|`'^"~=\.)/,
+          /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|`'^"~=\.\\)/,
           1
         )
       ],
@@ -191,7 +197,11 @@ export const TxtAST = {
   parse(text: string) {
     const ast = LaTeX.Program.tryParse(text);
     return traverse(ast).map(function(node) {
-      if (this.parent && this.parent.node.isDocument && JSON.stringify(this.parent.node.children) === JSON.stringify(node)) {
+      if (
+        this.parent &&
+        this.parent.node.isDocument &&
+        JSON.stringify(this.parent.node.children) === JSON.stringify(node)
+      ) {
         const children = [
           {
             ...this.parent.node,
