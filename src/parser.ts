@@ -338,10 +338,53 @@ export const TxtAST = {
             }
             break;
           case "program":
+            let children = node.value;
+            if (this.isRoot) {
+              children = [
+                {
+                  loc: { start: tmp.loc.start },
+                  type: ASTNodeTypes.Paragraph,
+                  range: [tmp.range[0]],
+                  children: []
+                }
+              ];
+              for (const child of node.value) {
+                if (child.name === "emptyline") {
+                  children.slice(-1)[0].loc.end = {
+                    line: child.start.line,
+                    column: child.start.column - 1
+                  };
+                  children.slice(-1)[0].range.push(child.start.offset);
+                  children.slice(-1)[0].raw = text.slice(
+                    children.slice(-1)[0].range[0],
+                    children.slice(-1)[0].range[1]
+                  );
+                  children.push({
+                    type: ASTNodeTypes.Paragraph,
+                    loc: {
+                      start: {
+                        column: child.end.column - 1,
+                        line: child.end.line
+                      }
+                    },
+                    range: [child.end.offset],
+                    children: []
+                  });
+                } else {
+                  children.slice(-1)[0].children.push(child);
+                }
+              }
+              children.slice(-1)[0].loc.end = tmp.loc.end;
+              children.slice(-1)[0].range.push(tmp.range[1]);
+              children.slice(-1)[0].raw = text.slice(
+                children.slice(-1)[0].range[0],
+                children.slice(-1)[0].range[1]
+              );
+            }
             this.update({
               ...tmp,
-              type: this.isRoot ? ASTNodeTypes.Document : ASTNodeTypes.Paragraph,
-              children: node.value
+              type: this.isRoot ? ASTNodeTypes.Document : ASTNodeTypes.Html,
+              children
             });
             break;
         }
