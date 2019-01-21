@@ -191,6 +191,55 @@ export const TxtAST = {
   parse(text: string) {
     const ast = LaTeX.Program.tryParse(text);
     return traverse(ast).map(function(node) {
+      if (this.parent && this.parent.node.isDocument && node[0] && node[0].loc) {
+        console.log(node);
+        const children = [
+          {
+            ...this.parent.node,
+            type: ASTNodeTypes.Paragraph,
+            children: [node[0]]
+          }
+        ];
+        for (const child of node.slice(1)) {
+          if (child.name === "emptyline") {
+            children.push(child);
+            children.slice(-1)[0].loc.end = {
+              line: child.start.line,
+              column: child.start.column - 1
+            };
+            children.slice(-1)[0].range[1] = child.start.offset;
+            children.slice(-1)[0].raw = text.slice(
+              children.slice(-1)[0].range[0],
+              children.slice(-1)[0].range[1]
+            );
+            children.push({
+              type: ASTNodeTypes.Paragraph,
+              loc: {
+                start: {
+                  column: child.end.column - 1,
+                  line: child.end.line
+                },
+                end: {
+                  column: 0,
+                  line: 0
+                }
+              },
+              range: [child.end.offset, 0],
+              raw: "",
+              children: []
+            });
+          } else {
+            children.slice(-1)[0].children.push(child);
+          }
+        }
+        children.slice(-1)[0].loc.end = this.parent.node.loc.end;
+        children.slice(-1)[0].range.push(this.parent.node.range[1]);
+        children.slice(-1)[0].raw = text.slice(
+          children.slice(-1)[0].range[0],
+          children.slice(-1)[0].range[1]
+        );
+        this.update(children);
+      }
       if (this.notLeaf && node.value) {
         const tmp: TxtNode = {
           loc: {
@@ -346,58 +395,10 @@ export const TxtAST = {
             }
             break;
           case "program":
-            let children = node.value;
-            if (this.parent && this.parent.node.isDocument) {
-              children = [
-                {
-                  ...tmp,
-                  type: ASTNodeTypes.Paragraph,
-                  children: [node.value[0]]
-                }
-              ];
-              for (const child of node.value.slice(1)) {
-                if (child.name === "emptyline") {
-                  children.push(child);
-                  children.slice(-1)[0].loc.end = {
-                    line: child.start.line,
-                    column: child.start.column - 1
-                  };
-                  children.slice(-1)[0].range[1] = child.start.offset;
-                  children.slice(-1)[0].raw = text.slice(
-                    children.slice(-1)[0].range[0],
-                    children.slice(-1)[0].range[1]
-                  );
-                  children.push({
-                    type: ASTNodeTypes.Paragraph,
-                    loc: {
-                      start: {
-                        column: child.end.column - 1,
-                        line: child.end.line
-                      },
-                      end: {
-                        column: 0,
-                        line: 0
-                      }
-                    },
-                    range: [child.end.offset, 0],
-                    raw: "",
-                    children: []
-                  });
-                } else {
-                  children.slice(-1)[0].children.push(child);
-                }
-              }
-              children.slice(-1)[0].loc.end = tmp.loc.end;
-              children.slice(-1)[0].range.push(tmp.range[1]);
-              children.slice(-1)[0].raw = text.slice(
-                children.slice(-1)[0].range[0],
-                children.slice(-1)[0].range[1]
-              );
-            }
             this.update({
               ...tmp,
               type: this.isRoot ? ASTNodeTypes.Document : ASTNodeTypes.Html,
-              children
+              children: node.value
             });
             break;
         }
