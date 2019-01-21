@@ -59,6 +59,9 @@ const EndEnvironment = (context: Context): Parsimmon.Parser<null> =>
   });
 
 export const LaTeX = Parsimmon.createLanguage({
+  Block(r) {
+    return r.Program.wrap(Parsimmon.string("{"), Parsimmon.string("}"));
+  },
   Environment(r) {
     const context = { name: "" };
     const option = r.Program.wrap(Parsimmon.string("["), Parsimmon.string("]"));
@@ -178,8 +181,8 @@ export const LaTeX = Parsimmon.createLanguage({
       r.Environment
     );
     const m = Parsimmon.alt(r.VerbatimMacro, r.Macro);
-    return Parsimmon.alt(e, m, r.EmptyLine, r.Text, r.Comment)
-      .many()
+    return Parsimmon.alt(e, m, r.EmptyLine, r.Text, r.Comment, r.Block)
+    .many()
       .node("program");
   },
   Text() {
