@@ -1,5 +1,5 @@
 import Parsimmon from "parsimmon";
-import { ASTNodeTypes } from "@textlint/ast-node-types";
+import { ASTNodeTypes, TxtNode } from "@textlint/ast-node-types";
 import traverse from "traverse";
 
 interface MacroNode {
@@ -13,51 +13,51 @@ interface EnvironmentNode {
   body: any;
 }
 
+interface Context {
+  name: string;
+}
+
 const BeginEnvironment = (
   pattern: string,
-  environment: { name: string }
+  context: Context
 ): Parsimmon.Parser<string> =>
   Parsimmon((input, i) => {
     const m = input.slice(i).match(new RegExp(`^\\\\begin\\{(${pattern})\\}`));
     if (m !== null) {
-      environment.name = m[1];
+      context.name = m[1];
       return Parsimmon.makeSuccess(i + m[0].length, m[1]);
     } else {
       return Parsimmon.makeFailure(i, `\\begin{${pattern}}`);
     }
   });
 
-const EndEnvironment = (environment: {
-  name: string;
-}): Parsimmon.Parser<null> =>
+const EndEnvironment = (context: Context): Parsimmon.Parser<null> =>
   Parsimmon((input, i) => {
-    const m = input
-      .slice(i)
-      .match(new RegExp(`^\\\\end\\{${environment.name}\\}`));
+    const m = input.slice(i).match(new RegExp(`^\\\\end\\{${context.name}\\}`));
     if (m !== null) {
       return Parsimmon.makeSuccess(i + m[0].length, null);
     } else {
-      return Parsimmon.makeFailure(i, `\\end{${environment.name}}`);
+      return Parsimmon.makeFailure(i, `\\end{${context.name}}`);
     }
   });
 
 export const LaTeX = Parsimmon.createLanguage({
   Environment(r) {
-    const environment = { name: "" };
+    const context = { name: "" };
     const option = r.Program.wrap(Parsimmon.string("["), Parsimmon.string("]"));
     const argument = r.Program.wrap(
       Parsimmon.string("{"),
       Parsimmon.string("}")
     );
     return Parsimmon.seqObj<EnvironmentNode>(
-      ["name", BeginEnvironment(".*?", environment)],
+      ["name", BeginEnvironment(".*?", context)],
       ["arguments", Parsimmon.alt(option, argument).many()],
       ["body", r.Program],
-      EndEnvironment(environment)
+      EndEnvironment(context)
     ).node("environment");
   },
   ListEnvironment(r) {
-    const environment = { name: "" };
+    const context = { name: "" };
     const option = r.Program.wrap(Parsimmon.string("["), Parsimmon.string("]"));
     const argument = r.Program.wrap(
       Parsimmon.string("{"),
@@ -79,10 +79,10 @@ export const LaTeX = Parsimmon.createLanguage({
       })
     );
     return Parsimmon.seqObj<EnvironmentNode>(
-      ["name", BeginEnvironment("itemize|enumerate", environment)],
+      ["name", BeginEnvironment("itemize|enumerate", context)],
       ["arguments", Parsimmon.alt(option, argument).many()],
       ["body", body],
-      EndEnvironment(environment)
+      EndEnvironment(context)
     ).node("environment");
   },
   DisplayMathEnvironment(r) {
@@ -175,37 +175,35 @@ export const TxtAST = {
     const ast = LaTeX.Program.tryParse(text);
     return traverse(ast).map(function(node) {
       if (this.notLeaf && node.value) {
-        const loc = {
-          end: {
-            column: node.end.column - 1,
-            line: node.end.line
+        const tmp: TxtNode = {
+          loc: {
+            end: {
+              column: node.end.column - 1,
+              line: node.end.line
+            },
+            start: {
+              column: node.start.column - 1,
+              line: node.start.line
+            }
           },
-          start: {
-            column: node.start.column - 1,
-            line: node.start.line
-          }
+          range: [node.start.offset, node.end.offset],
+          raw: text.slice(node.start.offset, node.end.offset),
+          type: "Unknown"
         };
-        const range = [node.start.offset, node.end.offset];
-        const raw = text.slice(node.start.offset, node.end.offset);
-        let type = "Unknown";
         switch (node.name) {
           case "comment":
             this.update({
-              loc,
-              raw,
-              range,
+              ...tmp,
               type: ASTNodeTypes.Comment,
               value: node.value
             });
             break;
           case "emptyline":
-            this.update({ loc, raw, range, type: ASTNodeTypes.Break });
+            this.update({ ...tmp, type: ASTNodeTypes.Break });
             break;
           case "text":
             this.update({
-              loc,
-              raw,
-              range,
+              ...tmp,
               type: ASTNodeTypes.Str,
               value: node.value
             });
@@ -214,90 +212,70 @@ export const TxtAST = {
             switch (node.value.name) {
               case "textbf":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Strong,
                   children: node.value.arguments
                 });
                 break;
               case "textit":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Emphasis,
                   children: node.value.arguments
                 });
                 break;
               case "item":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.ListItem,
                   children: node.value.arguments
                 });
                 break;
               case "verb":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Code,
                   value: node.value.arguments[0]
                 });
                 break;
               case "verb*":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Code,
                   value: node.value.arguments[0]
                 });
                 break;
               case "section":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Header,
                   children: node.value.arguments
                 });
                 break;
               case "subsection":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Header,
                   children: node.value.arguments
                 });
                 break;
               case "subsubsection":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Header,
                   children: node.value.arguments
                 });
                 break;
               case "chapter":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Header,
                   children: node.value.arguments
                 });
                 break;
               default:
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: "Unknown",
                   children: node.value.arguments
                 });
@@ -308,55 +286,42 @@ export const TxtAST = {
             switch (node.value.name) {
               case "displaymath":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.CodeBlock,
                   children: node.value.arguments.concat(node.value.body)
                 });
                 break;
               case "inlinemath":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.Code,
                   children: node.value.arguments.concat(node.value.body)
                 });
                 break;
               case "enumerate":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.List,
                   children: node.value.arguments.concat(node.value.body)
                 });
                 break;
               case "itemize":
                 this.update({
-                  loc,
-                  raw,
-                  range,
+                  ...tmp,
                   type: ASTNodeTypes.List,
                   children: node.value.arguments.concat(node.value.body)
                 });
                 break;
               default:
                 this.update({
-                  loc,
-                  raw,
-                  range,
-                  type: "Unknown",
+                  ...tmp,
                   children: node.value.arguments.concat(node.value.body)
                 });
             }
             break;
           case "program":
             this.update({
-              loc,
-              raw,
-              range,
+              ...tmp,
               type: this.isRoot ? ASTNodeTypes.Document : "Unknown",
               children: node.value
             });

@@ -1,5 +1,5 @@
 {
-    "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
+    "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
     "rules": {
         "@typescript-eslint/indent": "off",
         "@typescript-eslint/member-delimiter-style": "off",
