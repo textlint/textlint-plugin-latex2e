@@ -27,7 +27,7 @@ export class LaTeXProcessor implements TextlintPluginProcessor {
     this.config = config;
   }
   public availableExtensions(): string[] {
-    return [".tex", ".cls"].concat(this.config.extensions);
+    return [".tex", ".cls"].concat(this.config.extensions || []);
   }
   public processor(extension: string) {
     return {

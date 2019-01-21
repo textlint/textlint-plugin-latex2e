@@ -15,4 +15,6 @@
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { LaTeXProcessor } from "./LaTeXProcessor";
-export const Processor = LaTeXProcessor;
+import { TextlintPluginCreator } from "@textlint/types";
+const creator: TextlintPluginCreator = { Processor: LaTeXProcessor };
+export default creator;
