@@ -2,8 +2,9 @@
   "name": "textlint-plugin-latex2e",
   "version": "0.1.0",
   "description": "A textlint plugin for LaTeX2e",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "scripts": {
+    "build": "tsc",
     "test": "jest"
   },
   "keywords": [
