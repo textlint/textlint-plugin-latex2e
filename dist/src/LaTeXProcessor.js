@@ -6,7 +6,7 @@ class LaTeXProcessor {
         this.config = config;
     }
     availableExtensions() {
-        return [".tex", ".cls"].concat(this.config.extensions);
+        return [".tex", ".cls"].concat(this.config.extensions || []);
     }
     processor(extension) {
         return {
