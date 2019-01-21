@@ -148,7 +148,7 @@ export const LaTeX = Parsimmon.createLanguage({
       [
         "name",
         Parsimmon.regexp(
-          /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|`'^"~=\.\\)/,
+          /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|[`'^"~=\.\\ ])/,
           1
         )
       ],
@@ -162,7 +162,7 @@ export const LaTeX = Parsimmon.createLanguage({
     ).node("macro");
   },
   Comment() {
-    return Parsimmon.regexp(/%([^\n\r]+)/, 1).node("comment");
+    return Parsimmon.regexp(/%([^\n\r]*)/, 1).node("comment");
   },
   EmptyLine() {
     return Parsimmon.newline
