@@ -11,6 +11,12 @@ We welcome your contribution for adding new syntax! Thanks.
 $ npm install @ta2gch/textlint-plugin-latex2e
 ```
 
+And add to `.textlintrc`
+
+```
+   plugins: ["@ta2gch/textlint-plugin-latex2e"]
+```
+
 ## Known Issue
 
 This kind of syntax cannot be interpreted correctly.
