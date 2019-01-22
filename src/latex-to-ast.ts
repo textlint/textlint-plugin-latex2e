@@ -252,7 +252,7 @@ export const parse = (text: string) => {
         },
         range: [node.start.offset, node.end.offset],
         raw: text.slice(node.start.offset, node.end.offset),
-        type: "Unknown"
+        type: "Unknown",
       };
       switch (node.name) {
         case "comment":
@@ -340,7 +340,7 @@ export const parse = (text: string) => {
             default:
               this.update({
                 ...tmp,
-                type: "Unknown",
+                type: ASTNodeTypes.Html,
                 children: node.value.arguments
               });
               break;
