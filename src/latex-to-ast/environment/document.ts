@@ -37,7 +37,7 @@ export const Document = (r: Rules) => {
     ];
     for (const item of parentNode.value) {
       value.slice(-1)[0].value.body.push(item);
-      if (item.name === "emptyline") {
+      if (item.name === "emptyline" || item.value.name === "par") {
         value.slice(-1)[0].end = item.end;
         value.push({
           start: item.end,
