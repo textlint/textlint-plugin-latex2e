@@ -19,7 +19,7 @@ import {
   TextlintPluginOptions
 } from "@textlint/types";
 import { TxtParentNode } from "@textlint/ast-node-types";
-import { TxtAST } from "./parser";
+import { parse } from "./latex-to-ast";
 
 export class LaTeXProcessor implements TextlintPluginProcessor {
   private config: TextlintPluginOptions;
@@ -32,7 +32,7 @@ export class LaTeXProcessor implements TextlintPluginProcessor {
   public processor(extension: string) {
     return {
       preProcess(text: string, filePath?: string): TxtParentNode {
-        return TxtAST.parse(text);
+        return parse(text);
       },
       postProcess(messages: any[], filePath?: string) {
         return {
