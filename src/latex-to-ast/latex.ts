@@ -24,6 +24,11 @@ import {
   List
 } from "./environment";
 import { Macro, Verbatim } from "./macro";
+import { Text } from "./text";
+import { Comment } from "./comment";
+import { EmptyLine } from "./emptyline";
+import { Argument } from "./argument";
+import { Option } from "./option";
 
 export const LaTeX = Parsimmon.createLanguage({
   Environment,
@@ -33,27 +38,11 @@ export const LaTeX = Parsimmon.createLanguage({
   InlineMath,
   Macro,
   Verbatim,
-  Argument(r) {
-    return r.Program.wrap(Parsimmon.string("{"), Parsimmon.string("}"));
-  },
-  Option(r) {
-    return Parsimmon.noneOf("]")
-      .many()
-      .wrap(Parsimmon.string("["), Parsimmon.string("]"))
-      .map((_: any) => {
-        const opt = _.join();
-        return r.Program.tryParse(opt);
-      });
-  },
-  Comment() {
-    return Parsimmon.regexp(/%([^\n\r]*)/, 1).node("comment");
-  },
-  EmptyLine() {
-    return Parsimmon.newline
-      .atLeast(2)
-      .map(_ => _.join(""))
-      .node("emptyline");
-  },
+  Argument,
+  Option,
+  Comment,
+  EmptyLine,
+  Text,
   Program(r) {
     const environment = Parsimmon.alt(
       r.DisplayMath,
@@ -73,14 +62,5 @@ export const LaTeX = Parsimmon.createLanguage({
     )
       .many()
       .node("program");
-  },
-  Text() {
-    return Parsimmon.alt(
-      Parsimmon.noneOf("$%{}\\\n\r"),
-      Parsimmon.newline.notFollowedBy(Parsimmon.newline)
-    )
-      .atLeast(1)
-      .map(_ => _.join(""))
-      .node("text");
   }
 });
