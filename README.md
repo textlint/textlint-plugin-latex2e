@@ -31,7 +31,7 @@ To avoid this issue, you can write them out of the file with `\input` command.
 
 ## Roadmap
 
-- [ ] Add tests
+- [ ] Add tests (Currently works well for me but no tests)
     - [ ] Comment
     - [ ] Macro
     - [ ] Verbatim
