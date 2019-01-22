@@ -49,7 +49,7 @@ describe("Parsimmon AST", async () => {
   });
 });
 
-describe("Txtnode AST", async () => {
+describe("TxtNode AST", async () => {
   test("valid ast", async () => {
     const code = `
         \\documentclass{article}
