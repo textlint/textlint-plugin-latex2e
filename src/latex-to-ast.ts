@@ -70,6 +70,54 @@ export const LaTeX = Parsimmon.createLanguage({
       EndEnvironment(context)
     ).node("environment");
   },
+  DocumentEnvironment(r) {
+    const context = { name: "" };
+    const option = r.Option;
+    const argument = r.Argument;
+    return Parsimmon.seqObj<EnvironmentNode>(
+      ["name", BeginEnvironment("document", context)],
+      ["arguments", Parsimmon.alt(option, argument).many()],
+      [
+        "body",
+        r.Program.map(parentNode => {
+          const body = [
+            {
+              start: parentNode.start,
+              end: parentNode.end,
+              name: "environment",
+              value: {
+                name: "paragraph",
+                arguments: [],
+                body: [] as any[]
+              }
+            }
+          ];
+          for (const item of parentNode.value) {
+            body.slice(-1)[0].value.body.push(item);
+            if (item.name === "emptyline") {
+              body.slice(-1)[0].end = item.end;
+              body.push({
+                start: item.end,
+                end: item.end,
+                name: "environment",
+                value: {
+                  name: "paragraph",
+                  arguments: [],
+                  body: []
+                }
+              });
+            }
+          }
+          body.slice(-1)[0].end = parentNode.end;
+          return {
+            ...parentNode,
+            value: body
+          };
+        })
+      ],
+      EndEnvironment(context)
+    ).node("environment");
+  },
   ListEnvironment(r) {
     const context = { name: "" };
     const option = r.Option;
@@ -170,6 +218,7 @@ export const LaTeX = Parsimmon.createLanguage({
       r.DisplayMathEnvironment,
       r.InlineMathEnvironment,
       r.ListEnvironment,
+      r.DocumentEnvironment,
       r.Environment
     );
     const m = Parsimmon.alt(r.VerbatimMacro, r.Macro);
@@ -188,62 +237,9 @@ export const LaTeX = Parsimmon.createLanguage({
   }
 });
 
-const splitToParagraph = (parentNode: any, text: string) => {
-  const children = [
-    {
-      ...parentNode,
-      type: ASTNodeTypes.Paragraph,
-      children: [parentNode.children[0]],
-      isDocument: false
-    }
-  ];
-  for (const child of parentNode.children.slice(1)) {
-    if (child.name === "emptyline") {
-      children.push(child);
-      children.slice(-1)[0].loc.end = {
-        line: child.start.line,
-        column: child.start.column - 1
-      };
-      children.slice(-1)[0].range[1] = child.start.offset;
-      children.slice(-1)[0].raw = text.slice(
-        children.slice(-1)[0].range[0],
-        children.slice(-1)[0].range[1]
-      );
-      children.push({
-        type: ASTNodeTypes.Paragraph,
-        loc: {
-          start: {
-            column: child.end.column - 1,
-            line: child.end.line
-          },
-          end: {
-            column: 0,
-            line: 0
-          }
-        },
-        range: [child.end.offset, 0],
-        raw: "",
-        children: []
-      });
-    } else {
-      children.slice(-1)[0].children.push(child);
-    }
-  }
-  children.slice(-1)[0].loc.end = parentNode.loc.end;
-  children.slice(-1)[0].range[1] = parentNode.range[1];
-  children.slice(-1)[0].raw = text.slice(
-    children.slice(-1)[0].range[0],
-    children.slice(-1)[0].range[1]
-  );
-  return children;
-};
-
 export const parse = (text: string) => {
   const ast = LaTeX.Program.tryParse(text);
   return traverse(ast).map(function(node) {
-    if (this.parent && this.parent.node.isDocument && this.key === "children") {
-      this.update(splitToParagraph(this.parent.node, text));
-    }
     if (this.notLeaf && node.value) {
       const tmp: TxtNode = {
         loc: {
@@ -382,12 +378,11 @@ export const parse = (text: string) => {
                 children: node.value.arguments.concat(node.value.body)
               });
               break;
-            case "document":
+            case "paragraph":
               this.update({
                 ...tmp,
-                type: ASTNodeTypes.Html,
-                children: node.value.arguments.concat(node.value.body),
-                isDocument: true
+                type: ASTNodeTypes.Paragraph,
+                children: node.value.arguments.concat(node.value.body)
               });
               break;
             default:

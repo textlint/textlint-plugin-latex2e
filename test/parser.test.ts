@@ -10,7 +10,7 @@ describe("Parsimmon AST", async () => {
         Hello
         \\end{document}
         `;
-    // process.stdout.write(JSON.stringify(LaTeX.Program.tryParse(code), null, 2));
+      //process.stdout.write(JSON.stringify(LaTeX.Program.tryParse(code), null, 2));
     expect(LaTeX.Program.tryParse(code)).toBeTruthy();
   });
 
