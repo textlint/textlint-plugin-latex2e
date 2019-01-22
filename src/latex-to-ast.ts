@@ -74,47 +74,45 @@ export const LaTeX = Parsimmon.createLanguage({
     const context = { name: "" };
     const option = r.Option;
     const argument = r.Argument;
+    const body = r.Program.map(parentNode => {
+      const value = [
+        {
+          start: parentNode.start,
+          end: parentNode.end,
+          name: "environment",
+          value: {
+            name: "paragraph",
+            arguments: [],
+            body: [] as any[]
+          }
+        }
+      ];
+      for (const item of parentNode.value) {
+        value.slice(-1)[0].value.body.push(item);
+        if (item.name === "emptyline") {
+          value.slice(-1)[0].end = item.end;
+          value.push({
+            start: item.end,
+            end: item.end,
+            name: "environment",
+            value: {
+              name: "paragraph",
+              arguments: [],
+              body: []
+            }
+          });
+        }
+      }
+      value.slice(-1)[0].end = parentNode.end;
+      return {
+        ...parentNode,
+        value
+      };
+    });
     return Parsimmon.seqObj<EnvironmentNode>(
       ["name", BeginEnvironment("document", context)],
       ["arguments", Parsimmon.alt(option, argument).many()],
-      [
-        "body",
-        r.Program.map(parentNode => {
-          const body = [
-            {
-              start: parentNode.start,
-              end: parentNode.end,
-              name: "environment",
-              value: {
-                name: "paragraph",
-                arguments: [],
-                body: [] as any[]
-              }
-            }
-          ];
-          for (const item of parentNode.value) {
-            body.slice(-1)[0].value.body.push(item);
-            if (item.name === "emptyline") {
-              body.slice(-1)[0].end = item.end;
-              body.push({
-                start: item.end,
-                end: item.end,
-                name: "environment",
-                value: {
-                  name: "paragraph",
-                  arguments: [],
-                  body: []
-                }
-              });
-            }
-          }
-          body.slice(-1)[0].end = parentNode.end;
-          return {
-            ...parentNode,
-            value: body
-          };
-        })
-      ],
+      ["body", body],
       EndEnvironment(context)
     ).node("environment");
   },
