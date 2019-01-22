@@ -17,17 +17,17 @@
 
 import Parsimmon from "parsimmon";
 import { Rules } from "../rules";
-import { MacroNode } from "../macro";
+import { CommandNode } from "../command";
 import { BeginEnvironment, EndEnvironment, EnvironmentNode } from "./common";
 
 export const List = (r: Rules) => {
   const context = { name: "" };
   const option = r.Option;
   const argument = r.Argument;
-  const item = Parsimmon.seqObj<MacroNode>(
+  const item = Parsimmon.seqObj<CommandNode>(
     ["name", Parsimmon.regex(/\\(i+tem)/, 1)],
     ["arguments", r.Program.map(_ => [_])]
-  ).node("macro");
+  ).node("command");
   const body = Parsimmon.seqMap(
     Parsimmon.index,
     item.many(),

@@ -23,7 +23,7 @@ import {
   Document,
   List
 } from "./environment";
-import { Macro, Verbatim } from "./macro";
+import { Command, Verbatim } from "./command";
 import { Text } from "./text";
 import { Comment } from "./comment";
 import { EmptyLine } from "./emptyline";
@@ -36,7 +36,7 @@ export const LaTeX = Parsimmon.createLanguage({
   List,
   DisplayMath,
   InlineMath,
-  Macro,
+  Command,
   Verbatim,
   Argument,
   Option,
@@ -51,10 +51,10 @@ export const LaTeX = Parsimmon.createLanguage({
       r.Document,
       r.Environment
     );
-    const macro = Parsimmon.alt(r.Verbatim, r.Macro);
+    const command = Parsimmon.alt(r.Verbatim, r.Command);
     return Parsimmon.alt(
       environment,
-      macro,
+      command,
       r.EmptyLine,
       r.Text,
       r.Comment,

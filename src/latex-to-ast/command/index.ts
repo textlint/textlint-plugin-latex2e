@@ -14,23 +14,5 @@
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { Rules } from "../rules";
-import Parsimmon from "parsimmon";
-
-export interface MacroNode {
-  name: string;
-  arguments: any[];
-}
-
-export const Macro = (r: Rules) => {
-  const option = r.Option;
-  const argument = r.Argument;
-  const name = Parsimmon.regexp(
-    /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|[`'^"~=\.\\ ])/,
-    1
-  );
-  return Parsimmon.seqObj<MacroNode>(
-    ["name", name],
-    ["arguments", Parsimmon.alt(option, argument).many()]
-  ).node("macro");
-};
+export { CommandNode, Command } from "./common";
+export { Verbatim } from "./verbatim";

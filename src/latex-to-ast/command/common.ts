@@ -17,14 +17,20 @@
 import { Rules } from "../rules";
 import Parsimmon from "parsimmon";
 
-export interface MacroNode {
+export interface CommandNode {
   name: string;
   arguments: any[];
 }
 
-export const Verbatim = (r: Rules) => {
-  return Parsimmon.seqObj<MacroNode>(
-    ["name", Parsimmon.regexp(/\\(verb*?)/, 1)],
-    ["arguments", Parsimmon.regexp(/\|.*?\|/, 1).map(_ => [_])]
-  ).node("macro");
+export const Command = (r: Rules) => {
+  const option = r.Option;
+  const argument = r.Argument;
+  const name = Parsimmon.regexp(
+    /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|[`'^"~=\.\\ ])/,
+    1
+  );
+  return Parsimmon.seqObj<CommandNode>(
+    ["name", name],
+    ["arguments", Parsimmon.alt(option, argument).many()]
+  ).node("command");
 };

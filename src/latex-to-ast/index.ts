@@ -56,7 +56,7 @@ export const parse = (text: string) => {
             value: node.value
           });
           break;
-        case "macro":
+        case "command":
           switch (node.value.name) {
             case "textbf":
               this.update({
