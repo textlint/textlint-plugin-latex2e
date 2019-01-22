@@ -1,6 +1,7 @@
 src/
 test/
 node_modules/
+coverage/
 tsconfig.json
 jest.config.json
 .eslintrc.json
