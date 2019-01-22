@@ -1,6 +1,7 @@
 import * as ASTTester from "@textlint/ast-tester";
 import "jest";
-import { LaTeX, parse } from "../src/latex-to-ast";
+import { parse } from "../src/latex-to-ast";
+import { LaTeX } from "../src/latex-to-ast/latex";
 
 describe("Parsimmon AST", async () => {
   test("non-null", async () => {
