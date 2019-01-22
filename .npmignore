@@ -1,0 +1,8 @@
+src/
+test/
+node_modules/
+tsconfig.json
+jest.config.json
+.eslintrc.json
+.editorconfig
+.gitignore

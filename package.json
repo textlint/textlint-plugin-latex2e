@@ -1,5 +1,5 @@
 {
-  "name": "textlint-plugin-latex2e",
+  "name": "@ta2gch/textlint-plugin-latex2e",
   "version": "0.1.0",
   "description": "A textlint plugin for LaTeX2e",
   "main": "lib/index.js",
@@ -35,5 +35,16 @@
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.4"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ta2gch/textlint-plugin-latex2e.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ta2gch/textlint-plugin-latex2e/issues"
+  },
+  "homepage": "https://github.com/ta2gch/textlint-plugin-latex2e#readme"
 }
