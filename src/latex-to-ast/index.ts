@@ -26,12 +26,12 @@ export const parse = (text: string) => {
       const tmp: TxtNode = {
         loc: {
           end: {
-            column: node.end.column,
-            line: node.end.line + 1,
+            column: node.end.column - 1,
+            line: node.end.line,
           },
           start: {
-            column: node.start.column,
-            line: node.start.line + 1,
+            column: node.start.column - 1,
+            line: node.start.line,
           }
         },
         range: [node.start.offset, node.end.offset],
