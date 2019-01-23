@@ -25,8 +25,8 @@ export const Document = (r: Rules) => {
   const body = r.Program.map(parentNode => {
     const value = [
       {
-        start: parentNode.start,
-        end: parentNode.end,
+        start: parentNode.value[0].start,
+        end: parentNode.value[0].end,
         name: "environment",
         value: {
           name: "paragraph",
