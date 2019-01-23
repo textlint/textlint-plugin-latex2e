@@ -3,6 +3,8 @@ import "jest";
 import { parse } from "../src/latex-to-ast";
 import { LaTeX } from "../src/latex-to-ast/latex";
 
+const debug = (x: any) => process.stdout.write(JSON.stringify(x, null, 2))
+
 describe("Parsimmon AST", async () => {
   test("non-null", async () => {
     const code = `
@@ -46,6 +48,18 @@ describe("Parsimmon AST", async () => {
         }
       ]
     });
+  });
+  test("Counting items", async() => {
+    const code =
+        `\\begin{itemize}
+
+            \\item 1 \\command
+
+            \\item \\command 2
+
+        \\end{itemize}`;
+    const ast = LaTeX.Program.tryParse(code);
+    expect(ast.value[0].value.body.value.length).toBe(2);
   });
 });
 

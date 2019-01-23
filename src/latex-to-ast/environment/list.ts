@@ -22,8 +22,6 @@ import { BeginEnvironment, EndEnvironment, EnvironmentNode } from "./common";
 
 export const List = (r: Rules) => {
   const context = { name: "" };
-  const option = r.Option;
-  const argument = r.Argument;
   const item = Parsimmon.seqObj<CommandNode>(
     ["name", Parsimmon.regex(/\\(i+tem)/, 1)],
     ["arguments", r.Program.map(_ => [_])]
@@ -33,15 +31,16 @@ export const List = (r: Rules) => {
     item.many(),
     Parsimmon.index,
     (start, items, end) => ({
+      start,
       end,
       name: "program",
-      start,
       value: items
     })
   );
   return Parsimmon.seqObj<EnvironmentNode>(
     ["name", BeginEnvironment("itemize|enumerate", context)],
-    ["arguments", Parsimmon.alt(option, argument).many()],
+    ["arguments", Parsimmon.alt(r.Option, r.Argument).many()],
+    Parsimmon.whitespace,
     ["body", body],
     EndEnvironment(context)
   ).node("environment");
