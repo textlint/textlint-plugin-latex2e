@@ -8,13 +8,13 @@ We welcome your contribution for adding new syntax! Thanks.
 ## Installation
 
 ```
-$ npm install @ta2gch/textlint-plugin-latex2e
+$ npm install textlint-plugin-latex2e
 ```
 
 And add to `.textlintrc`
 
 ```
-   plugins: ["@ta2gch/textlint-plugin-latex2e"]
+   plugins: ["latex2e"]
 ```
 
 ## Known Issue
