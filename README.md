@@ -1,5 +1,7 @@
 # Textlint Plugin LaTeX2ε
-[![npm version](https://badge.fury.io/js/%40ta2gch%2Ftextlint-plugin-latex2e.svg)](https://badge.fury.io/js/%40ta2gch%2Ftextlint-plugin-latex2e)
+[![npm](https://img.shields.io/npm/v/@ta2gch/textlint-plugin-latex2e.svg)](https://www.npmjs.com/package/@ta2gch/textlint-plugin-latex2e)
+[![circleci](https://img.shields.io/circleci/project/github/ta2gch/textlint-plugin-latex2e.svg)](https://circleci.com/gh/ta2gch/textlint-plugin-latex2e)
+
 
 This plugin contains rough LaTeX parser which doesn't cover all syntax, but it's enough.
 
