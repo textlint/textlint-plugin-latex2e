@@ -101,7 +101,7 @@ describe("Fixing document", async () => {
   test("latex code", async () => {
     const input = `
         \\documentclass{article}
-        \\begin{document}   
+        \\begin{document}
         I has a pens.
 
         \\hoge
