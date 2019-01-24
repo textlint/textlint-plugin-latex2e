@@ -72,7 +72,6 @@ describe("TxtNode AST", async () => {
         Hello
         \\end{document}
         `;
-    //process.stdout.write(JSON.stringify(TxtAST.parse(code), null, 2));
     ASTTester.test(parse(code));
   });
 });
@@ -102,9 +101,10 @@ describe("Fixing document", async () => {
   test("latex code", async () => {
     const input = `
         \\documentclass{article}
-        \\begin{document}
+        \\begin{document}   
         I has a pens.
 
+        \\hoge
         I has a pens.
         \\end{document}
         `;
@@ -113,6 +113,7 @@ describe("Fixing document", async () => {
         \\begin{document}
         I have a pen.
 
+        \\hoge
         I have a pen.
         \\end{document}
         `;
