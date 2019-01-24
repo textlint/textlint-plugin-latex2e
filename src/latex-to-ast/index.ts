@@ -27,11 +27,11 @@ export const parse = (text: string) => {
         loc: {
           end: {
             column: node.end.column - 1,
-            line: node.end.line,
+            line: node.end.line
           },
           start: {
             column: node.start.column - 1,
-            line: node.start.line,
+            line: node.start.line
           }
         },
         range: [node.start.offset, node.end.offset],
@@ -182,6 +182,8 @@ export const parse = (text: string) => {
             children: node.value
           });
           break;
+        default:
+          this.update(tmp);
       }
     }
   });
