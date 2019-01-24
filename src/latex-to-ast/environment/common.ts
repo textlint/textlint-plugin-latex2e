@@ -33,7 +33,7 @@ export const BeginEnvironment = (
   context: Context
 ): Parsimmon.Parser<string> =>
   Parsimmon((input, i) => {
-    const m = input.slice(i).match(new RegExp(`^\\\\begin\\{(${pattern})\\}`));
+    const m = input.slice(i).match(new RegExp(`^\\\\begin\\{(${pattern})\\}[\n\r\s]*`));
     if (m !== null) {
       context.name = m[1];
       return Parsimmon.makeSuccess(i + m[0].length, m[1]);
