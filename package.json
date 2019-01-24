@@ -34,7 +34,7 @@
     "eslint-plugin-prettier": "^3.0.1",
     "jest": "^23.6.0",
     "prettier": "^1.16.0",
-    "textlint-rule-ginger": "^2.2.0",
+    "textlint-rule-ginger": "^2.2.1",
     "textlint-rule-spellcheck-tech-word": "^5.0.0",
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
