@@ -104,13 +104,30 @@ describe("Fixing document", async () => {
         \\documentclass{article}
         \\begin{document}
         I has a pens.
+
+        I has a pens.
         \\end{document}
         `;
     const output = `
         \\documentclass{article}
         \\begin{document}
         I have a pen.
+
+        I have a pen.
         \\end{document}
+        `;
+    const result = await kernel.fixText(input, { ...options, ext: ".tex" });
+    expect(result.output).toBe(output);
+  });
+
+  test("latex code one line", async () => {
+    const input = `
+        \\documentclass{article}
+        \\begin{document}I has a pens.\\end{document}
+        `;
+    const output = `
+        \\documentclass{article}
+        \\begin{document}I have a pen.\\end{document}
         `;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
