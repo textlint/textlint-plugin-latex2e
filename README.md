@@ -1,5 +1,5 @@
 # Textlint Plugin LaTeX2ε
-[![npm](https://img.shields.io/npm/v/@ta2gch/textlint-plugin-latex2e.svg)](https://www.npmjs.com/package/@ta2gch/textlint-plugin-latex2e)
+[![npm](https://img.shields.io/npm/v/textlint-plugin-latex2e.svg)](https://www.npmjs.com/package/@ta2gch/textlint-plugin-latex2e)
 [![circleci](https://img.shields.io/circleci/project/github/ta2gch/textlint-plugin-latex2e.svg)](https://circleci.com/gh/ta2gch/textlint-plugin-latex2e)
 
 
@@ -10,13 +10,13 @@ We welcome your contribution for adding new syntax! Thanks.
 ## Installation
 
 ```
-$ npm install @ta2gch/textlint-plugin-latex2e
+$ npm install textlint-plugin-latex2e
 ```
 
 And add to `.textlintrc`
 
 ```
-   plugins: ["@ta2gch/textlint-plugin-latex2e"]
+   plugins: ["latex2e"]
 ```
 
 ## Known Issue
