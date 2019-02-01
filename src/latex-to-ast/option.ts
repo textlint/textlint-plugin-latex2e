@@ -21,7 +21,7 @@ import { Rules } from "./rules";
 export const Option = (r: Rules) => {
   return Parsimmon.regex(/[^\]]*/)
     .wrap(Parsimmon.string("["), Parsimmon.string("]"))
-    .map((opt : any) => {
+    .map((opt: any) => {
       return r.Program.tryParse(opt);
     });
 };

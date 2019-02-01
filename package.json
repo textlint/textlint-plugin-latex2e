@@ -4,6 +4,7 @@
   "description": "A textlint plugin for LaTeX2e",
   "main": "lib/index.js",
   "scripts": {
+    "lint": "eslint src/**/*.ts",
     "build": "tsc",
     "test": "jest"
   },
