@@ -19,6 +19,20 @@ describe("Parsimmon AST", async () => {
     expect(LaTeX.Program.tryParse(code)).toBeTruthy();
   });
 
+  test("non-null opt", async () => {
+    const code = `
+        \\documentclass{article}
+        \\begin{document}
+        \\begin{definition}[\\cite{textlint2019}, p.3, 10.2 LaTeX]
+        LaTeX is awesome!
+        \\end{definition}
+        \\end{document}
+        `;
+    //debug(code);
+    //debug(LaTeX.Program.tryParse(code));
+    expect(LaTeX.Program.tryParse(code)).toBeTruthy();
+  });
+
   test("comment", async () => {
     const code = `%comment`;
     expect(LaTeX.Program.tryParse(code)).toEqual({

@@ -19,11 +19,9 @@ import Parsimmon from "parsimmon";
 import { Rules } from "./rules";
 
 export const Option = (r: Rules) => {
-  return Parsimmon.noneOf("]")
-    .many()
+  return Parsimmon.regex(/[^\]]*/)
     .wrap(Parsimmon.string("["), Parsimmon.string("]"))
-    .map((_: any) => {
-      const opt = _.join();
+    .map((opt : any) => {
       return r.Program.tryParse(opt);
     });
 };
