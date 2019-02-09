@@ -167,6 +167,13 @@ export const parse = (text: string) => {
                 children: node.value.arguments.concat(node.value.body)
               });
               break;
+            case "figure":
+              this.update({
+                ...tmp,
+                type: ASTNodeTypes.Image,
+                children: node.value.arguments.concat(node.value.body)
+              });
+              break;
             default:
               this.update({
                 ...tmp,
