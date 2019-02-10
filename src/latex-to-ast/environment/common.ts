@@ -44,12 +44,12 @@ export const BeginEnvironment = (
 
 export const EndEnvironment = (context: Context): Parsimmon.Parser<null> =>
   Parsimmon((input, i) => {
-    const pattern = context.name.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
-    const m = input.slice(i).match(new RegExp(`^\\\\end\\{${pattern}\\}`));
+    const p = context.name.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+    const m = input.slice(i).match(new RegExp(`^\\\\end\\{${p}\\}`));
     if (m !== null) {
       return Parsimmon.makeSuccess(i + m[0].length, null);
     } else {
-      return Parsimmon.makeFailure(i, `\\end{${pattern}}`);
+      return Parsimmon.makeFailure(i, `\\end{${p}}`);
     }
   });
 
