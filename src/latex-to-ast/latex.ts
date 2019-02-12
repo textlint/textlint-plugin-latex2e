@@ -19,6 +19,7 @@ import Parsimmon from "parsimmon";
 import {
   Environment,
   DisplayMath,
+  Figure,
   InlineMath,
   Document,
   List
@@ -35,6 +36,7 @@ export const LaTeX = Parsimmon.createLanguage({
   Document,
   List,
   DisplayMath,
+  Figure,
   InlineMath,
   Command,
   Verbatim,
