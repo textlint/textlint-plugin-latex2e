@@ -102,6 +102,16 @@ describe("Parsimmon AST", async () => {
     expect(top.name).toBe("figure");
     expect(top.body.value[1].value.name).toBe("minipage");
     expect(top.body.value[1].value.body.value[1].value.name).toBe("center");
+  test("math", async () => {
+    const code = `$1 + 1 = 2$
+        \\(1 + 1 = 2\\)
+        $$1 + 1 = 2$$
+        \\[1 + 1 = 2\\]`;
+    const ast = LaTeX.Program.tryParse(code);
+    expect(ast.value[0].value.name).toBe("inlinemath");
+    expect(ast.value[2].value.name).toBe("inlinemath");
+    expect(ast.value[4].value.name).toBe("displaymath");
+    expect(ast.value[6].value.name).toBe("displaymath");
   });
 });
 
