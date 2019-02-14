@@ -19,7 +19,7 @@ import { EnvironmentNode, BeginEnvironment, EndEnvironment } from "./common";
 import { Rules } from "../rules";
 
 export const Document = (r: Rules) => {
-  const context = { name: "" };
+  const context = { name: "", parents: [] };
   const option = r.Option;
   const argument = r.Argument;
   const body = r.Program.map(parentNode => {
