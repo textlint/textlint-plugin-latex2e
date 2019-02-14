@@ -89,6 +89,20 @@ describe("Parsimmon AST", async () => {
     expect(ast.value[0].value.name).toBe("figure");
     expect(ast.value[2].value.name).toBe("figure*");
   });
+  test("nested environments", async () => {
+    const code = `\\begin{figure}
+        \\begin{minipage}{0.45\hsize}
+        \\begin{center}
+        \\includegraphics[width=5cm]{somefigure.png}
+        \\end{center}
+        \\end{minipage}
+        \\end{figure}`;
+    const ast = LaTeX.Program.tryParse(code);
+    const top = ast.value[0].value;
+    expect(top.name).toBe("figure");
+    expect(top.body.value[1].value.name).toBe("minipage");
+    expect(top.body.value[1].value.body.value[1].value.name).toBe("center");
+  });
 });
 
 describe("TxtNode AST", async () => {

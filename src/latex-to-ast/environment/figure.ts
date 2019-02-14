@@ -20,7 +20,7 @@ import { Rules } from "../rules";
 import { BeginEnvironment, EndEnvironment, EnvironmentNode } from "./common";
 
 export const Figure = (r: Rules) => {
-  const context = { name: "" };
+  const context = { name: "", parents: [] };
   const body = Parsimmon.seqMap(
     Parsimmon.index,
     Parsimmon.index,
