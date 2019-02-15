@@ -108,10 +108,11 @@ describe("Parsimmon AST", async () => {
         $$1 + 1 = 2$$
         \\[1 + 1 = 2\\]`;
     const ast = LaTeX.Program.tryParse(code);
-    expect(ast.value[0].value.name).toBe("inlinemath");
-    expect(ast.value[2].value.name).toBe("inlinemath");
-    expect(ast.value[4].value.name).toBe("displaymath");
-    expect(ast.value[6].value.name).toBe("displaymath");
+    for(let i = 0; i <= 6; i += 2) {
+      const v = ast.value[i].value;
+      expect(v.name).toBe(i <= 2 ? "inlinemath" : "displaymath");
+      expect(v.body.value[0].value).toBe("1 + 1 = 2");
+    }
   });
 });
 
