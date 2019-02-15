@@ -26,6 +26,7 @@ export interface EnvironmentNode {
 
 interface Context {
   name: string;
+  parents: string[];
 }
 
 export const BeginEnvironment = (
@@ -35,6 +36,7 @@ export const BeginEnvironment = (
   Parsimmon((input, i) => {
     const m = input.slice(i).match(new RegExp(`^\\\\begin\\{(${pattern})\\}`));
     if (m !== null) {
+      if(context.name !== '') context.parents.push(context.name);
       context.name = m[1];
       return Parsimmon.makeSuccess(i + m[0].length, m[1]);
     } else {
@@ -47,6 +49,7 @@ export const EndEnvironment = (context: Context): Parsimmon.Parser<null> =>
     const p = context.name.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
     const m = input.slice(i).match(new RegExp(`^\\\\end\\{${p}\\}`));
     if (m !== null) {
+      context.name = context.parents.pop() || '';
       return Parsimmon.makeSuccess(i + m[0].length, null);
     } else {
       return Parsimmon.makeFailure(i, `\\end{${p}}`);
@@ -54,7 +57,7 @@ export const EndEnvironment = (context: Context): Parsimmon.Parser<null> =>
   });
 
 export const Environment = (r: Rules) => {
-  const context = { name: "" };
+  const context = { name: "", parents: [] };
   const option = r.Option;
   const argument = r.Argument;
   return Parsimmon.seqObj<EnvironmentNode>(
