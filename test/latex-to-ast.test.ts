@@ -102,6 +102,7 @@ describe("Parsimmon AST", async () => {
     expect(top.name).toBe("figure");
     expect(top.body.value[1].value.name).toBe("minipage");
     expect(top.body.value[1].value.body.value[1].value.name).toBe("center");
+  });
   test("math", async () => {
     const code = `$1 + 1 = 2$
         \\(1 + 1 = 2\\)
