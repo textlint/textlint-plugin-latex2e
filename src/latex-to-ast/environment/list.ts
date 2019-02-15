@@ -21,7 +21,7 @@ import { CommandNode } from "../command";
 import { BeginEnvironment, EndEnvironment, EnvironmentNode } from "./common";
 
 export const List = (r: Rules) => {
-  const context = { name: "" };
+  const context = { name: "", parents: [] };
   const item = Parsimmon.seqObj<CommandNode>(
     ["name", Parsimmon.regex(/\\(i+tem)/, 1)],
     ["arguments", r.Program.map(_ => [_])]
