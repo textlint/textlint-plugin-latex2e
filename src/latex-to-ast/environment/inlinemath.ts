@@ -24,8 +24,8 @@ export const InlineMath = (r: Rules) => {
     Parsimmon.string("\\)")
   );
   const texStyle = r.Program.wrap(
-    Parsimmon.string("$$"),
-    Parsimmon.string("$$")
+    Parsimmon.regex(/\$(?!\$)/),
+    Parsimmon.regex(/\$(?!\$)/)
   );
   return Parsimmon.seqObj<EnvironmentNode>(
     ["name", Parsimmon.succeed("inlinemath")],
