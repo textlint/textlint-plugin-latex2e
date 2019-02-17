@@ -26,7 +26,7 @@ export const Command = (r: Rules) => {
   const option = r.Option;
   const argument = r.Argument;
   const name = Parsimmon.regexp(
-    /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|[`'^"~=\.\\ ])/,
+    /\\(?!begin|end|verbatim|item)([a-zA-Z_@]+|[`'^"~=_#$%&{}\.\\ ])/,
     1
   );
   return Parsimmon.seqObj<CommandNode>(
