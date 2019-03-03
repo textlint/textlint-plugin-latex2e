@@ -115,8 +115,8 @@ describe("Parsimmon AST", async () => {
       expect(v.body.value[0].value).toBe("1 + 1 = 2");
     }
   });
-  test("symbols", async () => {
-    const symbols = ["#", "$", "%", "&", "_", "{", "}"];
+  test("commands for symbols, spaces, etc.", async () => {
+    const symbols = ["#", "@", "$", "%", "&", "_", "{", "}", ",", "/", " ", "\\"];
     const code = symbols.reduce((p, v) => p += "\\" + v, "")
     const ast = LaTeX.Program.tryParse(code);
     for(let i = 0; i < ast.value.length; ++i) {
