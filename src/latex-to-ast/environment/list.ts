@@ -38,7 +38,7 @@ export const List = (r: Rules) => {
     })
   );
   return Parsimmon.seqObj<EnvironmentNode>(
-    ["name", BeginEnvironment("itemize|enumerate", context, "([\\r\\n\\ ]*(\\\\(?!.*item\\ ).*))?")],
+    ["name", BeginEnvironment("itemize|enumerate", context, "(?:[\\r\\n\\ ]*(\\\\(?!.*item\\ ).*))?")],
     ["arguments", Parsimmon.alt(r.Option, r.Argument).many()],
     Parsimmon.whitespace,
     ["body", body],
