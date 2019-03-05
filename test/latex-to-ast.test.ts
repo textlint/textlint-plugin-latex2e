@@ -66,15 +66,22 @@ describe("Parsimmon AST", async () => {
     });
   });
   test("Counting items", async () => {
-    const code = `\\begin{itemize}
-
-            \\item 1 \\command
-
-            \\item \\command 2
-
-        \\end{itemize}`;
-    const ast = LaTeX.Program.tryParse(code);
-    expect(ast.value[0].value.body.value.length).toBe(2);
+    const codes = [
+      `\\begin{itemize}
+         \\item 1 \\command
+         \\item \\command 2
+       \\end{itemize}`,
+      `\\begin{itemize}
+         \\itemsep1pt\\parskip0pt\\parsep0pt
+         \\item 1
+         \\item 2
+       \\end{itemize}`
+    ];
+    for(const code of codes) {
+      const ast = LaTeX.Program.tryParse(code);
+      expect(ast.value[0].value.name).toBe("itemize");
+      expect(ast.value[0].value.body.value.length).toBe(2);
+    }
   });
   test("figure environment", async () => {
     const code = `\\begin{figure}

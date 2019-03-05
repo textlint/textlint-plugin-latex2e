@@ -31,10 +31,11 @@ interface Context {
 
 export const BeginEnvironment = (
   pattern: string,
-  context: Context
+  context: Context,
+  additionalRegex: string = ''
 ): Parsimmon.Parser<string> =>
   Parsimmon((input, i) => {
-    const m = input.slice(i).match(new RegExp(`^\\\\begin\\{(${pattern})\\}`));
+    const m = input.slice(i).match(new RegExp(`^\\\\begin\\{(${pattern})\\}` + additionalRegex));
     if (m !== null) {
       if(context.name !== '') context.parents.push(context.name);
       context.name = m[1];
