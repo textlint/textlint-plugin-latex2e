@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "eslint src/**/*.ts",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
     "textlint",
