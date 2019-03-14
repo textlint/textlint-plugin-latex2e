@@ -22,7 +22,7 @@ import traverse from "traverse";
 export const parse = (text: string) => {
   const ast = LaTeX.Program.tryParse(text);
   return traverse(ast).map(function(node) {
-    if (this.notLeaf && node.value) {
+    if (this.notLeaf && node.value !== undefined) {
       const tmp: TxtNode = {
         loc: {
           end: {
