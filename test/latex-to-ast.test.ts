@@ -143,6 +143,15 @@ describe("TxtNode AST", async () => {
         `;
     ASTTester.test(parse(code));
   });
+  test("parse empty comment", async () => {
+    const code = `
+        \\begin{document}
+        %
+        hoge%
+        \\end{document}
+        `;
+    ASTTester.test(parse(code));
+  });
 });
 
 describe("Fixing document", async () => {
