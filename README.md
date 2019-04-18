@@ -2,7 +2,6 @@
 [![npm](https://img.shields.io/npm/v/textlint-plugin-latex2e.svg)](https://www.npmjs.com/package/textlint-plugin-latex2e)
 [![circleci](https://img.shields.io/circleci/project/github/ta2gch/textlint-plugin-latex2e.svg)](https://circleci.com/gh/ta2gch/textlint-plugin-latex2e)
 
-
 This plugin contains rough LaTeX parser which doesn't cover all syntax, but it's enough.
 
 We welcome your contribution for adding new syntax! Thanks.
@@ -30,21 +29,6 @@ This kind of syntax cannot be interpreted correctly.
 ```
 
 To avoid this issue, you can write them out of the file with `\input` command.
-
-## Roadmap
-
-- [ ] Add tests (Currently works well for me but no tests)
-    - [ ] Comment
-    - [ ] Macro
-    - [ ] Verbatim
-    - [ ] Environment
-    - [ ] DisplayMath
-    - [ ] InlineMath
-    - [ ] Document
-
-- [ ] Skip some component with `.textlintrc`.
-    - [ ] Macro
-    - [ ] Environment
 
 ## Copyright
 
