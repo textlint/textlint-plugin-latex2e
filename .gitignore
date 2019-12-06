@@ -2,5 +2,4 @@ coverage/
 node_modules/
 src/**/*.js
 test/**/*.js
-package-lock.json
 lib/
