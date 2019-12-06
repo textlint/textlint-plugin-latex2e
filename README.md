@@ -1,7 +1,7 @@
 # Textlint Plugin LaTeX2ε
 [![npm](https://img.shields.io/npm/v/textlint-plugin-latex2e.svg)](https://www.npmjs.com/package/textlint-plugin-latex2e)
 [![circleci](https://img.shields.io/circleci/project/github/ta2gch/textlint-plugin-latex2e.svg)](https://circleci.com/gh/ta2gch/textlint-plugin-latex2e)
-
+[![actions](https://github.com/fgborges/textlint-plugin-latex2e/workflows/Node%20CI/badge.svg)](https://github.com/fgborges/textlint-plugins-latex2e/actions)
 This plugin contains rough LaTeX parser which doesn't cover all syntax, but it's enough.
 
 We welcome your contribution for adding new syntax! Thanks.
