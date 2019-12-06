@@ -83,6 +83,16 @@ describe("Parsimmon AST", async () => {
       expect(ast.value[0].value.body.value.length).toBe(2);
     }
   });
+  test("Counting items in description", async () => {
+    const code =
+      `\\begin{description}
+         \\item[foo] 1 \\command
+         \\item[bar] \\command 2
+       \\end{description}`;
+    const ast = LaTeX.Program.tryParse(code);
+    expect(ast.value[0].value.name).toBe("description");
+    expect(ast.value[0].value.body.value.length).toBe(2);
+  });
   test("figure environment", async () => {
     const code = `\\begin{figure}
         \\includegraphics[width=5cm]{somefigure.png}
