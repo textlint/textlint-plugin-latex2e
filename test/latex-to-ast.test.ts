@@ -4,9 +4,7 @@ import { parse } from "../src/latex-to-ast";
 import { LaTeX } from "../src/latex-to-ast/latex";
 import { TextlintKernel } from "@textlint/kernel";
 
-const debug = (x: any) => console.log(JSON.stringify(x, null, 2));
-
-describe("Parsimmon AST", async () => {
+describe("Parsimmon AST", () => {
   test("non-null", async () => {
     const code = `
         \\documentclass{article}
@@ -150,7 +148,7 @@ describe("Parsimmon AST", async () => {
   });
 });
 
-describe("TxtNode AST", async () => {
+describe("TxtNode AST", () => {
   test("valid ast", async () => {
     const code = `
         \\documentclass{article}
@@ -171,7 +169,7 @@ describe("TxtNode AST", async () => {
   });
 });
 
-describe("Fixing document", async () => {
+describe("Fixing document", () => {
   const kernel = new TextlintKernel();
   const options = {
     filePath: "<test>",
