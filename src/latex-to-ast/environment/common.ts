@@ -32,12 +32,14 @@ interface Context {
 export const BeginEnvironment = (
   pattern: string,
   context: Context,
-  additionalRegex: string = ''
+  additionalRegex = ""
 ): Parsimmon.Parser<string> =>
   Parsimmon((input, i) => {
-    const m = input.slice(i).match(new RegExp(`^\\\\begin\\{(${pattern})\\}` + additionalRegex));
+    const m = input
+      .slice(i)
+      .match(new RegExp(`^\\\\begin\\{(${pattern})\\}` + additionalRegex));
     if (m !== null) {
-      if(context.name !== '') context.parents.push(context.name);
+      if (context.name !== "") context.parents.push(context.name);
       context.name = m[1];
       return Parsimmon.makeSuccess(i + m[0].length, m[1]);
     } else {
@@ -47,10 +49,10 @@ export const BeginEnvironment = (
 
 export const EndEnvironment = (context: Context): Parsimmon.Parser<null> =>
   Parsimmon((input, i) => {
-    const p = context.name.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+    const p = context.name.replace(/[\\^$.*+?()[\]{}|]/g, "\\$&");
     const m = input.slice(i).match(new RegExp(`^\\\\end\\{${p}\\}`));
     if (m !== null) {
-      context.name = context.parents.pop() || '';
+      context.name = context.parents.pop() || "";
       return Parsimmon.makeSuccess(i + m[0].length, null);
     } else {
       return Parsimmon.makeFailure(i, `\\end{${p}}`);

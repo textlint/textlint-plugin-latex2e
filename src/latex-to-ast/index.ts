@@ -19,7 +19,7 @@ import { LaTeX } from "./latex";
 import { ASTNodeTypes, TxtNode } from "@textlint/ast-node-types";
 import traverse from "traverse";
 
-export const parse = (text: string) => {
+export const parse = (text: string): any => {
   const ast = LaTeX.Program.tryParse(text);
   return traverse(ast).map(function(node) {
     if (this.notLeaf && node.value !== undefined) {

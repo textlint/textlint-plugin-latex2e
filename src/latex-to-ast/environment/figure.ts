@@ -31,7 +31,7 @@ export const Figure = (r: Rules) => {
     })
   );
   return Parsimmon.seqObj<EnvironmentNode>(
-    ["name", BeginEnvironment("figure\\\*?", context)],
+    ["name", BeginEnvironment("figure\\*?", context)],
     ["arguments", Parsimmon.alt(r.Option, r.Argument).many()],
     Parsimmon.whitespace,
     ["body", body],
