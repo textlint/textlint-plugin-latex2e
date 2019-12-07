@@ -23,10 +23,10 @@ export const InlineMath = (r: Rules) => {
     Parsimmon.string("\\("),
     Parsimmon.string("\\)")
   );
-  const texStyle = r.Program.wrap(
-    Parsimmon.regex(/\$(?!\$)/),
-    Parsimmon.regex(/\$(?!\$)/)
-  );
+  const texStyle = Parsimmon.regex(/\$([^$]+)\$/, 1)
+    .node("text")
+    .map(_ => [_])
+    .node("program");
   return Parsimmon.seqObj<EnvironmentNode>(
     ["name", Parsimmon.succeed("inlinemath")],
     ["arguments", Parsimmon.succeed([])],

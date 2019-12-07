@@ -12,11 +12,22 @@ describe("Parsimmon AST", () => {
         Hello
         \\end{document}
         `;
-    //debug(code);
-    //debug(LaTeX.Program.tryParse(code));
     expect(LaTeX.Program.tryParse(code)).toBeTruthy();
   });
-
+  test("inline-math", async () => {
+    const cases = ["\\(a+b\\)", "$a+b$"];
+    for (const code of cases) {
+      expect(LaTeX.Program.tryParse(code).value[0].name).toBe("environment");
+      expect(LaTeX.Program.tryParse(code).value.length).toBe(1);
+    }
+  });
+  test("displaymath", async () => {
+    const cases = ["\\[a+b\\]", "$$a+b$$"];
+    for (const code of cases) {
+      expect(LaTeX.Program.tryParse(code).value[0].name).toBe("environment");
+      expect(LaTeX.Program.tryParse(code).value.length).toBe(1);
+    }
+  });
   test("non-null opt", async () => {
     const code = `
         \\documentclass{article}
@@ -26,8 +37,6 @@ describe("Parsimmon AST", () => {
         \\end{definition}
         \\end{document}
         `;
-    //debug(code);
-    //debug(LaTeX.Program.tryParse(code));
     expect(LaTeX.Program.tryParse(code)).toBeTruthy();
   });
 
@@ -82,8 +91,7 @@ describe("Parsimmon AST", () => {
     }
   });
   test("Counting items in description", async () => {
-    const code =
-      `\\begin{description}
+    const code = `\\begin{description}
           \\item[用語A]~\\\\
               hogefuga \\\\
               piyopoyo
@@ -131,7 +139,7 @@ describe("Parsimmon AST", () => {
         $$1 + 1 = 2$$
         \\[1 + 1 = 2\\]`;
     const ast = LaTeX.Program.tryParse(code);
-    for(let i = 0; i <= 6; i += 2) {
+    for (let i = 0; i <= 6; i += 2) {
       const v = ast.value[i].value;
       expect(v.name).toBe(i <= 2 ? "inlinemath" : "displaymath");
       expect(v.body.value[0].value).toBe("1 + 1 = 2");
