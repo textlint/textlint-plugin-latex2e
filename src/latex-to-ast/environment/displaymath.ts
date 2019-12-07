@@ -24,10 +24,10 @@ export const DisplayMath = (r: Rules) => {
     Parsimmon.string("\\["),
     Parsimmon.string("\\]")
   );
-  const texStyle = r.Program.wrap(
-    Parsimmon.string("$$"),
-    Parsimmon.string("$$")
-  );
+  const texStyle = Parsimmon.regex(/\$\$([^$]+)\$\$/, 1)
+    .node("text")
+    .map(_ => [_])
+    .node("program");
   return Parsimmon.seqObj<EnvironmentNode>(
     ["name", Parsimmon.succeed("displaymath")],
     ["arguments", Parsimmon.succeed([])],
