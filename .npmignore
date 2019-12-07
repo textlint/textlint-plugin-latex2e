@@ -7,3 +7,6 @@ jest.config.json
 .eslintrc.json
 .editorconfig
 .gitignore
+.devcontainer
+.github
+.vscode
