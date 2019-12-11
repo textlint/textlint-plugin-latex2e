@@ -32,7 +32,7 @@ To avoid this issue, you can write them out of the file with `\input` command.
 
 ## Copyright
 
-Copyright (C) 2018 TANIGUCHI Masaya ALL Rights Reserved.
+Copyright (C) 2018 Fernando Garcia Borges ALL Rights Reserved.
 
 ## License
 
