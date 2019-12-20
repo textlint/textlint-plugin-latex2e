@@ -33,6 +33,9 @@ describe("Parsimmon AST", () => {
       `\\verb|abc|`,
       `\\verb%|$|%`,
       `\\verb$%^&$`,
+      `\\verb*|abc|`,
+      `\\verb*%|$|%`,
+      `\\verb*$%^&$`,
     ];
     for(const code of codes) {
       const ast = LaTeX.Program.tryParse(code);
