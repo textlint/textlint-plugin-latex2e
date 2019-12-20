@@ -24,7 +24,7 @@ export interface CommandNode {
 
 export const Verbatim = (r: Rules) => {
   return Parsimmon.seqObj<CommandNode>(
-    ["name", Parsimmon.regexp(/\\(verb*?)/, 1)],
-    ["arguments", Parsimmon.regexp(/\|.*?\|/, 1).map(_ => [_])]
+    ["name", Parsimmon.regexp(/\\(verb)\*?/, 1)],
+    ["arguments", Parsimmon.regexp(/([^a-z^A-Z\s\\\*])(.*?)\1/, 2).map(_ => [_])]
   ).node("command");
 };
