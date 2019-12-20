@@ -28,6 +28,21 @@ describe("Parsimmon AST", () => {
       expect(LaTeX.Program.tryParse(code).value.length).toBe(1);
     }
   });
+  test("verb", async () => {
+    const codes = [
+      `\\verb|abc|`,
+      `\\verb%|$|%`,
+      `\\verb$%^&$`,
+      `\\verb*|abc|`,
+      `\\verb*%|$|%`,
+      `\\verb*$%^&$`,
+    ];
+    for(const code of codes) {
+      const ast = LaTeX.Program.tryParse(code);
+      expect(ast.value[0].value.name).toBe("verb");
+      expect(ast.value[0].value.arguments[0].length).toBe(3);
+    }
+  });
   test("non-null opt", async () => {
     const code = `
         \\documentclass{article}
