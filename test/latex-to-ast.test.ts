@@ -35,9 +35,9 @@ describe("Parsimmon AST", () => {
       `\\verb$%^&$`,
       `\\verb*|abc|`,
       `\\verb*%|$|%`,
-      `\\verb*$%^&$`,
+      `\\verb*$%^&$`
     ];
-    for(const code of codes) {
+    for (const code of codes) {
       const ast = LaTeX.Program.tryParse(code);
       expect(ast.value[0].value.name).toBe("verb");
       expect(ast.value[0].value.arguments[0].length).toBe(3);
@@ -99,7 +99,7 @@ describe("Parsimmon AST", () => {
          \\item 2
        \\end{itemize}`
     ];
-    for(const code of codes) {
+    for (const code of codes) {
       const ast = LaTeX.Program.tryParse(code);
       expect(ast.value[0].value.name).toBe("itemize");
       expect(ast.value[0].value.body.value.length).toBe(2);
@@ -136,7 +136,7 @@ describe("Parsimmon AST", () => {
   });
   test("nested environments", async () => {
     const code = `\\begin{figure}
-        \\begin{minipage}{0.45\hsize}
+        \\begin{minipage}{0.45\\hsize}
         \\begin{center}
         \\includegraphics[width=5cm]{somefigure.png}
         \\end{center}
@@ -161,10 +161,23 @@ describe("Parsimmon AST", () => {
     }
   });
   test("commands for symbols, spaces, etc.", async () => {
-    const symbols = ["#", "@", "$", "%", "&", "_", "{", "}", ",", "/", " ", "\\"];
-    const code = symbols.reduce((p, v) => p += "\\" + v, "")
+    const symbols = [
+      "#",
+      "@",
+      "$",
+      "%",
+      "&",
+      "_",
+      "{",
+      "}",
+      ",",
+      "/",
+      " ",
+      "\\"
+    ];
+    const code = symbols.reduce((p, v) => ((p += "\\" + v), ""));
     const ast = LaTeX.Program.tryParse(code);
-    for(let i = 0; i < ast.value.length; ++i) {
+    for (let i = 0; i < ast.value.length; ++i) {
       expect(ast.value[i].name).toBe("command");
       expect(ast.value[i].value.name).toBe(symbols[i]);
     }
