@@ -1,22 +1,22 @@
-name: Node CI
+name: Lint
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "**.ts"
+      - ".eslintrc.json"
+      - "package.json"
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x, 13.x]
+  lint:
+    runs-on: ubuntu-18.04
 
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: " 13.x"
     - name: Restore cache if available
       uses: actions/cache@v1
       with:
@@ -24,10 +24,9 @@ jobs:
         key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-${{ matrix.node-version }}-
-    - name: npm install, build, and test
+    - name: npm install, and lint
       run: |
         npm ci
-        npm run build --if-present
-        npm test
+        npm run lint
       env:
         CI: true
