@@ -1,0 +1,32 @@
+name: Lint
+
+on:
+  push:
+    paths:
+      - "**.ts"
+      - ".eslintrc.json"
+      - "package.json"
+
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: " 13.x"
+    - name: Restore cache if available
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ matrix.node-version }}-
+    - name: npm install, and lint
+      run: |
+        npm ci
+        npm run lint
+      env:
+        CI: true

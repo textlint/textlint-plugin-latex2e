@@ -1,0 +1,20 @@
+name: Reviewdog
+
+on:
+  pull_request:
+    paths:
+      - "**.ts"
+      - ".eslintrc.json"
+      - "package.json"
+
+jobs:
+  eslint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run reviewdog
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          eslint_flags: "src/**/*.ts"
