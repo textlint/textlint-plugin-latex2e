@@ -20,4 +20,4 @@ export { Figure } from "./figure";
 export { InlineMath } from "./inlinemath";
 export { Document } from "./document";
 export { List } from "./list";
-export { Verbatim as VerbatimEnv } from "./verbatim";
+export { VerbatimEnv } from "./verbatim";
