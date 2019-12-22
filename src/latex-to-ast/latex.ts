@@ -22,7 +22,8 @@ import {
   Figure,
   InlineMath,
   Document,
-  List
+  List,
+  VerbatimEnv
 } from "./environment";
 import { Command, Verbatim } from "./command";
 import { Text } from "./text";
@@ -38,6 +39,7 @@ export const LaTeX = Parsimmon.createLanguage({
   DisplayMath,
   Figure,
   InlineMath,
+  VerbatimEnv,
   Command,
   Verbatim,
   Argument,
@@ -50,6 +52,7 @@ export const LaTeX = Parsimmon.createLanguage({
       r.DisplayMath,
       r.InlineMath,
       r.List,
+      r.VerbatimEnv,
       r.Document,
       r.Environment
     );

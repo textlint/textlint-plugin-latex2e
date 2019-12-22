@@ -174,6 +174,20 @@ export const parse = (text: string): any => {
                 children: node.value.arguments.concat(node.value.body)
               });
               break;
+            case "verbatim":
+              this.update({
+                ...tmp,
+                type: ASTNodeTypes.CodeBlock,
+                value: node.value.arguments.concat(node.value.body)
+              });
+              break;
+            case "verbatim*":
+              this.update({
+                ...tmp,
+                type: ASTNodeTypes.CodeBlock,
+                value: node.value.arguments.concat(node.value.body)
+              });
+              break;
             default:
               this.update({
                 ...tmp,
