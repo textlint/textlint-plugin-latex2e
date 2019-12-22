@@ -19,7 +19,7 @@ import Parsimmon from "parsimmon";
 import { Rules } from "../rules";
 import { BeginEnvironment, EndEnvironment, EnvironmentNode } from "./common";
 
-export const Verbatim = (r: Rules) => {
+export const VerbatimEnv = (r: Rules) => {
   const context = { name: "", parents: [] };
   return Parsimmon.seqObj<EnvironmentNode>(
     ["name", BeginEnvironment("verbatim\\*?", context)],
