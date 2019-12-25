@@ -49,10 +49,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ta2gch/textlint-plugin-latex2e.git"
+    "url": "git+https://github.com/fgborges/textlint-plugin-latex2e.git"
   },
   "bugs": {
-    "url": "https://github.com/ta2gch/textlint-plugin-latex2e/issues"
+    "url": "https://github.com/fgborges/textlint-plugin-latex2e/issues"
   },
-  "homepage": "https://github.com/ta2gch/textlint-plugin-latex2e#readme"
+  "homepage": "https://github.com/fgborges/textlint-plugin-latex2e#readme"
 }
