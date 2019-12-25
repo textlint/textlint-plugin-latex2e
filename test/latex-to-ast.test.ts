@@ -134,6 +134,18 @@ describe("Parsimmon AST", () => {
     expect(ast.value[0].value.name).toBe("figure");
     expect(ast.value[2].value.name).toBe("figure*");
   });
+  test("verbatim environment", async () => {
+    const code = `\\begin{verbatim}
+        %$#*:;@+=
+        \\end{verbatim}
+        \\begin{verbatim*}
+        %$#*:;@+=
+        \\end{verbatim*}`;
+    const ast = LaTeX.Program.tryParse(code);
+    expect(ast.value[0].value.name).toBe("verbatim");
+    // ast.value[1] is a text node ("\n        ")
+    expect(ast.value[2].value.name).toBe("verbatim*");
+  });
   test("nested environments", async () => {
     const code = `\\begin{figure}
         \\begin{minipage}{0.45\\hsize}

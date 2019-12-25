@@ -14,10 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with textlint-plugin-latex2e.  If not, see <http://www.gnu.org/licenses/>.
  */
-export { DisplayMath } from "./displaymath";
-export { Environment } from "./common";
-export { Figure } from "./figure";
-export { InlineMath } from "./inlinemath";
-export { Document } from "./document";
-export { List } from "./list";
-export { VerbatimEnv } from "./verbatim";
+
+import Parsimmon from "parsimmon";
+import { Rules } from "../rules";
+import { BeginEnvironment, EndEnvironment, EnvironmentNode } from "./common";
+
+export const VerbatimEnv = (r: Rules) => {
+  const context = { name: "", parents: [] };
+  return Parsimmon.seqObj<EnvironmentNode>(
+    ["name", BeginEnvironment("verbatim\\*?", context)],
+    ["arguments", Parsimmon.alt(r.Option, r.Argument).many()],
+    [
+      "body",
+      Parsimmon.regexp(/(?:(?!\\end\{verbatim\*?})[\s\S])*/).node("text")
+    ],
+    EndEnvironment(context)
+  ).node("environment");
+};
