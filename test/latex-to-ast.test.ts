@@ -28,6 +28,21 @@ describe("Parsimmon AST", () => {
       expect(LaTeX.Program.tryParse(code).value.length).toBe(1);
     }
   });
+  test("verb", async () => {
+    const codes = [
+      `\\verb|abc|`,
+      `\\verb%|$|%`,
+      `\\verb$%^&$`,
+      `\\verb*|abc|`,
+      `\\verb*%|$|%`,
+      `\\verb*$%^&$`
+    ];
+    for (const code of codes) {
+      const ast = LaTeX.Program.tryParse(code);
+      expect(ast.value[0].value.name).toBe("verb");
+      expect(ast.value[0].value.arguments[0].length).toBe(3);
+    }
+  });
   test("non-null opt", async () => {
     const code = `
         \\documentclass{article}
@@ -84,7 +99,7 @@ describe("Parsimmon AST", () => {
          \\item 2
        \\end{itemize}`
     ];
-    for(const code of codes) {
+    for (const code of codes) {
       const ast = LaTeX.Program.tryParse(code);
       expect(ast.value[0].value.name).toBe("itemize");
       expect(ast.value[0].value.body.value.length).toBe(2);
@@ -119,9 +134,21 @@ describe("Parsimmon AST", () => {
     expect(ast.value[0].value.name).toBe("figure");
     expect(ast.value[2].value.name).toBe("figure*");
   });
+  test("verbatim environment", async () => {
+    const code = `\\begin{verbatim}
+        %$#*:;@+=
+        \\end{verbatim}
+        \\begin{verbatim*}
+        %$#*:;@+=
+        \\end{verbatim*}`;
+    const ast = LaTeX.Program.tryParse(code);
+    expect(ast.value[0].value.name).toBe("verbatim");
+    // ast.value[1] is a text node ("\n        ")
+    expect(ast.value[2].value.name).toBe("verbatim*");
+  });
   test("nested environments", async () => {
     const code = `\\begin{figure}
-        \\begin{minipage}{0.45\hsize}
+        \\begin{minipage}{0.45\\hsize}
         \\begin{center}
         \\includegraphics[width=5cm]{somefigure.png}
         \\end{center}
@@ -146,10 +173,23 @@ describe("Parsimmon AST", () => {
     }
   });
   test("commands for symbols, spaces, etc.", async () => {
-    const symbols = ["#", "@", "$", "%", "&", "_", "{", "}", ",", "/", " ", "\\"];
-    const code = symbols.reduce((p, v) => p += "\\" + v, "")
+    const symbols = [
+      "#",
+      "@",
+      "$",
+      "%",
+      "&",
+      "_",
+      "{",
+      "}",
+      ",",
+      "/",
+      " ",
+      "\\"
+    ];
+    const code = symbols.reduce((p, v) => ((p += "\\" + v), ""));
     const ast = LaTeX.Program.tryParse(code);
-    for(let i = 0; i < ast.value.length; ++i) {
+    for (let i = 0; i < ast.value.length; ++i) {
       expect(ast.value[i].name).toBe("command");
       expect(ast.value[i].value.name).toBe(symbols[i]);
     }
