@@ -1,6 +1,6 @@
 import * as ASTTester from "@textlint/ast-tester";
 import "jest";
-import { parse } from "../src/latex-to-ast";
+import { parse } from "../src/latex-to-ast/index";
 import { LaTeX } from "../src/latex-to-ast/latex";
 import { TextlintKernel } from "@textlint/kernel";
 
