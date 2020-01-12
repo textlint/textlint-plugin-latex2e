@@ -19,6 +19,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@textlint/ast-node-types": "^4.2.5",
+    "latex-utensils": "^1.2.3",
     "parsimmon": "^1.13.0",
     "traverse": "^0.6.6"
   },
