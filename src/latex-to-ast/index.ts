@@ -178,14 +178,14 @@ export const parse = (text: string): any => {
               this.update({
                 ...tmp,
                 type: ASTNodeTypes.CodeBlock,
-                value: node.value.arguments.concat(node.value.body)
+                value: node.value.body.value
               });
               break;
             case "verbatim*":
               this.update({
                 ...tmp,
                 type: ASTNodeTypes.CodeBlock,
-                value: node.value.arguments.concat(node.value.body)
+                value: node.value.body.value
               });
               break;
             default:
