@@ -1,6 +1,6 @@
 {
   "name": "textlint-plugin-latex2e",
-  "version": "0.2.4",
+  "version": "1.0.0-alpha.0",
   "description": "A textlint plugin for LaTeX2e",
   "main": "lib/index.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "textlint",
     "latex"
   ],
-  "author": "TANIGUCHI Masaya",
+  "author": "Fernando Garcia Borges",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@textlint/ast-node-types": "^4.2.5",
