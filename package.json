@@ -1,6 +1,6 @@
 {
   "name": "textlint-plugin-latex2e",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A textlint plugin for LaTeX2e",
   "main": "lib/index.js",
   "scripts": {
