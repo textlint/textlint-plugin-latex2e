@@ -23,41 +23,53 @@ export const parse = (text: string): any => {
   const ast = latexParser.parse(text);
   traverse(ast.content).map(function(node: latexParser.Node | Location) {
     if ('kind' in node) { // Skip translation if node is an instance of Location
-      switch(node.kind) {
+      switch (node.kind) {
         case "command":
-          switch(node.name) {
-          case "textbf": this.update({
+          switch (node.name) {
+            case "textbf":
+              this.update({
+                loc: node.location,
+                type: ASTNodeTypes.Strong,
+                children: node.args
+              });
+              break;
+            case "textit":
+              this.update({
+                loc: node.location,
+                type: ASTNodeTypes.Emphasis,
+                children: node.args
+              });
+              break;
+          }
+          break;
+        case "verb":
+          this.update({
             loc: node.location,
-            type: ASTNodeTypes.Strong,
-            children: node.args
+            type: ASTNodeTypes.Code,
+            value: node.content
           });
           break;
-          case "textit": this.update({
+        case "command.text":
+          this.update({
             loc: node.location,
-            type: ASTNodeTypes.Emphasis,
-            children: node.args
+            type: ASTNodeTypes.Paragraph,
+            children: [node.arg]
           });
           break;
-        }
-        break;
-        case "verb": this.update({
-          loc: node.location,
-          type: ASTNodeTypes.Code,
-          value: node.content
-        });
-        break;
-        case "command.text": this.update({
-          loc: node.location,
-          type: ASTNodeTypes.Paragraph,
-          children: [node.arg]
-        });
-        break;
-        case "env.verbatim": this.update({
-          loc: node.location,
-          type: ASTNodeTypes.CodeBlock,
-          value: node.content
-        });
-        break;
+        case "env.verbatim":
+          this.update({
+            loc: node.location,
+            type: ASTNodeTypes.CodeBlock,
+            value: node.content
+          });
+          break;
+        case "env.minted":
+          this.update({
+            loc: node.location,
+            type: ASTNodeTypes.CodeBlock,
+            value: node.content
+          });
+          break;
       }
     }
   });
