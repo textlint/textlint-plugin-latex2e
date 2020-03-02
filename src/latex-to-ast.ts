@@ -22,13 +22,19 @@ import { ASTNodeTypes } from "@textlint/ast-node-types";
 export const parse = (text: string): any => {
   const ast = latexParser.parse(text);
   traverse(ast.content).map(function(node: latexParser.Node | Location) {
-    if ('kind' in node) { // Skip translation if node is an instance of Location
+    if ("kind" in node) {
+      // Skip translation if node is an instance of Location
       switch (node.kind) {
         case "command":
           switch (node.name) {
             case "textbf":
               this.update({
                 loc: node.location,
+                range: [node.location.start.offset, node.location.end.offset],
+                raw: text.slice(
+                  node.location.start.offset,
+                  node.location.end.offset
+                ),
                 type: ASTNodeTypes.Strong,
                 children: node.args
               });
@@ -36,6 +42,11 @@ export const parse = (text: string): any => {
             case "textit":
               this.update({
                 loc: node.location,
+                range: [node.location.start.offset, node.location.end.offset],
+                raw: text.slice(
+                  node.location.start.offset,
+                  node.location.end.offset
+                ),
                 type: ASTNodeTypes.Emphasis,
                 children: node.args
               });
@@ -73,4 +84,4 @@ export const parse = (text: string): any => {
       }
     }
   });
-}
+};
