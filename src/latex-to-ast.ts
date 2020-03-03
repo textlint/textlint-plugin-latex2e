@@ -21,8 +21,8 @@ import { ASTNodeTypes } from "@textlint/ast-node-types";
 
 export const parse = (text: string): any => {
   const ast = latexParser.parse(text);
-  traverse(ast.content).map(function(node: latexParser.Node | Location) {
-    if ("kind" in node) {
+  return traverse(ast.content).map(function(node: latexParser.Node | Location) {
+    if (typeof node == "object" && "kind" in node) {
       // Skip translation if node is an instance of Location
       switch (node.kind) {
         case "command":
@@ -51,35 +51,131 @@ export const parse = (text: string): any => {
                 children: node.args
               });
               break;
+            case "institute":
+            case "title":
+            case "author":
+            case "chapter":
+            case "section":
+            case "subsection":
+            case "subsubsection":
+              this.update({
+                loc: node.location,
+                range: [node.location.start.offset, node.location.end.offset],
+                raw: text.slice(
+                  node.location.start.offset,
+                  node.location.end.offset
+                ),
+                type: ASTNodeTypes.Header,
+                children: node.args
+              });
+              break;
           }
-          break;
-        case "verb":
-          this.update({
-            loc: node.location,
-            type: ASTNodeTypes.Code,
-            value: node.content
-          });
           break;
         case "command.text":
           this.update({
             loc: node.location,
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(
+              node.location.start.offset,
+              node.location.end.offset
+            ),
             type: ASTNodeTypes.Paragraph,
             children: [node.arg]
           });
           break;
-        case "env.verbatim":
+        case "env":
           this.update({
             loc: node.location,
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(
+              node.location.start.offset,
+              node.location.end.offset
+            ),
+            type: ASTNodeTypes.Paragraph,
+            children: [...node.args, ...node.content]
+          });
+          break;
+        case "env.lstlisting":
+        case "env.verbatim":
+        case "env.minted":
+          this.update({
+            loc: node.location,
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(
+              node.location.start.offset,
+              node.location.end.offset
+            ),
             type: ASTNodeTypes.CodeBlock,
             value: node.content
           });
           break;
-        case "env.minted":
+        case "env.math.align":
+        case "env.math.aligned":
+        case "displayMath":
           this.update({
             loc: node.location,
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(
+              node.location.start.offset,
+              node.location.end.offset
+            ),
             type: ASTNodeTypes.CodeBlock,
+            children: node.content
+          });
+          break;
+        case "inlineMath":
+        case "subscript":
+        case "superscript":
+        case "math.matching_paren":
+          this.update({
+            loc: node.location,
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(
+              node.location.start.offset,
+              node.location.end.offset
+            ),
+            type: ASTNodeTypes.Code,
+            children: node.content
+          });
+          break;
+        case "verb":
+          this.update({
+            loc: node.location,
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(
+              node.location.start.offset,
+              node.location.end.offset
+            ),
+            type: ASTNodeTypes.Code,
             value: node.content
           });
+          break;
+        case "text.string":
+          this.update({
+            loc: node.location,
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(
+              node.location.start.offset,
+              node.location.end.offset
+            ),
+            type: ASTNodeTypes.Str,
+            value: node.content
+          });
+          break;
+        case "arg.group":
+          this.update(node.content[0]);
+          break;
+        case "arg.optional":
+          this.update(node.content[0]);
+          break;
+        case "parbreak":
+        case "ignore":
+        case "alignmentTab":
+        case "activeCharacter":
+        case "math.character":
+        case "command.def":
+        case "commandParameter":
+          this.update(null);
           break;
       }
     }
