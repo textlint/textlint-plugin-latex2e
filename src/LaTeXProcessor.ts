@@ -19,7 +19,7 @@ import {
   TextlintPluginOptions
 } from "@textlint/types";
 import { TxtParentNode } from "@textlint/ast-node-types";
-import { parse } from "./latex-to-ast/index";
+import { parse } from "./latex-to-ast";
 
 export class LaTeXProcessor implements TextlintPluginProcessor {
   private config: TextlintPluginOptions;
