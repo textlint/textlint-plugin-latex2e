@@ -2837,10 +2837,16 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-latex-utensils@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/latex-utensils/-/latex-utensils-1.2.3.tgz#bb9194bb7e31d43372684b056f4306d25ca068d1"
-  integrity sha512-7CH/7ZA6PYoS7ih7WivPoZaFWqo84O9wx1j0cB97sOyrSYX7t1BF1yG1PymmtH66buZTzpef0fUh9dHgd1Cz3w==
+"latex-utensils@https://masaya.keybase.pub/latex-utensils-2.0.0-beta.3.tgz":
+  version "2.0.0-beta.3"
+  resolved "https://masaya.keybase.pub/latex-utensils-2.0.0-beta.3.tgz#ff599d231cb6038b4e6a694bfd04989904c8c19d"
+  optionalDependencies:
+    commander "^2.20.0"
+    pegjs-backtrace "^0.2.0"
+
+latex-utensils@nzt/latex-utensils:
+  version "2.0.0-beta.3"
+  resolved "https://codeload.github.com/nzt/latex-utensils/tar.gz/7996cb7ac3203364592bebeee20a570e0d4371b5"
   optionalDependencies:
     commander "^2.20.0"
     pegjs-backtrace "^0.2.0"
