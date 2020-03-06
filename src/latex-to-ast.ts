@@ -309,7 +309,7 @@ export const parse = (text: string): any => {
         case "inlineMath":
         case "subscript":
         case "superscript":
-        case "math.matching_paren":
+        case "math.matching_delimiters":
           this.update({
             loc: {
               start: {
