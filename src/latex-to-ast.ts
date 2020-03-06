@@ -24,9 +24,9 @@ const clean = (node: any): any => {
   if (Array.isArray(node)) {
     return node.filter(x => x !== null).map(clean);
   } else if (typeof node === "object") {
-    return Object.fromEntries(
-      Object.entries(node).map(([key, value]) => [key, clean(value)])
-    );
+    return Object.entries(node)
+      .map(([key, value]) => ({ [key]: clean(value) }))
+      .reduce((a, b) => Object.assign(a, b));
   } else {
     return node;
   }
