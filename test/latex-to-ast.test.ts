@@ -21,6 +21,20 @@ describe("TxtNode AST", () => {
         `;
     ASTTester.test(parse(code));
   });
+  test("Parse display math", async () => {
+    const code = `\\begin{equation}
+          x^2 - 6x + 1 = 0
+        \\end{equation}
+        `;
+    ASTTester.test(parse(code));
+  });
+  test("Parse inline math", async () => {
+    const code = `\\begin{document}
+          $x^2 = 4$
+        \\end{document}
+        `;
+    ASTTester.test(parse(code));
+  });
 });
 
 describe("Fixing document", () => {
