@@ -66,6 +66,14 @@ describe("TxtNode AST", () => {
     ASTTester.test(parse(code));
     expect(isNested(false, parse(code))).toBe(false);
   });
+  test("Parse comments", () => {
+    const code = `\\begin{document}
+          % comment
+          abcd
+        \\end{document}
+        `;
+    ASTTester.test(parse(code));
+  });
 });
 
 describe("Fixing document", () => {

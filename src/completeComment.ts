@@ -131,6 +131,9 @@ export const completeComments = (
   comments: latexParser.Comment[],
   rawText: string
 ): any => {
+  if (comments.length == 0) {
+    return root;
+  }
   const textlintComments = convertCommentToTxtNode(comments, rawText);
   if (isParentNode(root)) {
     for (const comment of textlintComments) {
