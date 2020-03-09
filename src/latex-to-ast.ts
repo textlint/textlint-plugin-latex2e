@@ -302,8 +302,8 @@ export const parse = (text: string): any => {
               node.location.start.offset,
               node.location.end.offset
             ),
-            type: ASTNodeTypes.CodeBlock,
-            children: node.content
+            value: latexParser.stringify(node.content),
+            type: ASTNodeTypes.CodeBlock
           });
           break;
         case "superscript":
@@ -346,8 +346,8 @@ export const parse = (text: string): any => {
               node.location.start.offset,
               node.location.end.offset
             ),
-            type: ASTNodeTypes.Code,
-            children: node.content
+            value: latexParser.stringify(node.content),
+            type: ASTNodeTypes.Code
           });
           break;
         case "verb":
