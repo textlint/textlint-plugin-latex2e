@@ -2837,16 +2837,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-"latex-utensils@https://masaya.keybase.pub/latex-utensils-2.0.0-beta.3.tgz":
-  version "2.0.0-beta.3"
-  resolved "https://masaya.keybase.pub/latex-utensils-2.0.0-beta.3.tgz#ff599d231cb6038b4e6a694bfd04989904c8c19d"
-  optionalDependencies:
-    commander "^2.20.0"
-    pegjs-backtrace "^0.2.0"
-
-latex-utensils@nzt/latex-utensils:
-  version "2.0.0-beta.3"
-  resolved "https://codeload.github.com/nzt/latex-utensils/tar.gz/7996cb7ac3203364592bebeee20a570e0d4371b5"
+latex-utensils@^2.0.0-beta.4:
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/latex-utensils/-/latex-utensils-2.0.0-beta.4.tgz#bd1d8b26473fc0678b555fd577e6974f15e425c7"
+  integrity sha512-kd4DZnSusmMErEQ6mqZs9uQV8zGaTU3mBk6vsUu0LXUxOx0JHsQUfaWdB+bGIW0kV4tg+90U+ha3BRSrfqBkHg==
   optionalDependencies:
     commander "^2.20.0"
     pegjs-backtrace "^0.2.0"
@@ -3341,11 +3335,6 @@ parse5@5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.0.tgz#c59341c9723f414c452975564c7c00a68d58acd2"
   integrity sha512-fxNG2sQjHvlVAYmzBZS9YlDp6PTSSDwa98vkD4QgVDDCAo84z5X1t5XyJQ62ImdLXx5NdIIfihey6xpum9/gRQ==
-
-parsimmon@^1.13.0:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/parsimmon/-/parsimmon-1.13.0.tgz#6e4ef3dbd45ed6ea6808be600ac4b9c8a44228cf"
-  integrity sha512-5UIrOCW+gjbILkjKPgTgmq8LKf8TT3Iy7kN2VD7OtQ81facKn8B4gG1X94jWqXYZsxG2KbJhrv/Yq/5H6BQn7A==
 
 pascalcase@^0.1.1:
   version "0.1.1"
