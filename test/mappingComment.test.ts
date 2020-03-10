@@ -68,18 +68,18 @@ describe("Conversion of latexParser.Comment", () => {
       }
     ];
     const actual = convertCommentToTxtNode(
-      comments as latexParser.Comment[],
-      rawText
+      rawText,
+      comments as latexParser.Comment[]
     );
     expect(actual).toMatchObject(expected);
     ASTTester.test(actual[0]);
   });
   test("undefined", async () => {
-    const actual = convertCommentToTxtNode(undefined, "");
+    const actual = convertCommentToTxtNode("", undefined);
     expect(actual).toMatchObject([]);
   });
   test("null", async () => {
-    const actual = convertCommentToTxtNode(null, "");
+    const actual = convertCommentToTxtNode("", null);
     expect(actual).toMatchObject([]);
   });
 });

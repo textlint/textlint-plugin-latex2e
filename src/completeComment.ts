@@ -25,12 +25,12 @@ import {
 
 export const convertCommentToTxtNode = (
   rawText: string,
-  comments?: latexParser.Comment[]
+  comments?: latexParser.Comment[] | null
 ): TxtNode[] => {
   if (!comments) {
     return [];
   }
-  return comments.map(
+  return comments?.map(
     (comment: latexParser.Comment): TxtNode => {
       return {
         loc: {
@@ -62,7 +62,7 @@ export const isAppearedBeforeNode = (
   if (nodeLocation.start.line >= commentLocation.end.line) {
     // \begin{document} % comment
     // \end{document}
-    if (nodeLocation.start.line == commentLocation.end.line) {
+    if (nodeLocation.start.line === commentLocation.end.line) {
       return nodeLocation.start.column >= commentLocation.end.column;
     }
     return true;
@@ -79,7 +79,7 @@ export const isIncludedByNode = (
     nodeLocation.end.line >= commentLocation.end.line
   ) {
     // \begin{document}\end{document} % comment
-    if (nodeLocation.end.line == commentLocation.end.line) {
+    if (nodeLocation.end.line === commentLocation.end.line) {
       return nodeLocation.end.column > commentLocation.start.column;
     }
     return true;
@@ -90,7 +90,9 @@ export const isIncludedByNode = (
 export const isParentNode = (node: any): node is TxtParentNode => {
   const children = node.children;
   return (
-    typeof node == "object" && children !== undefined && Array.isArray(children)
+    typeof node === "object" &&
+    children !== undefined &&
+    Array.isArray(children)
   );
 };
 
@@ -128,7 +130,7 @@ export const completeComments = (
   comments: latexParser.Comment[],
   rawText: string
 ): any => {
-  if (comments.length == 0) {
+  if (comments.length === 0) {
     return root;
   }
   const textlintComments = convertCommentToTxtNode(rawText, comments);
