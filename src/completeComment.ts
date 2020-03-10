@@ -24,10 +24,10 @@ import {
 } from "@textlint/ast-node-types";
 
 export const convertCommentToTxtNode = (
-  comments: latexParser.Comment[] | undefined | null,
-  rawText: string
+  rawText: string,
+  comments?: latexParser.Comment[]
 ): TxtNode[] => {
-  if (comments === undefined || comments === null) {
+  if (!comments) {
     return [];
   }
   return comments.map(
@@ -131,7 +131,7 @@ export const completeComments = (
   if (comments.length == 0) {
     return root;
   }
-  const textlintComments = convertCommentToTxtNode(comments, rawText);
+  const textlintComments = convertCommentToTxtNode(rawText, comments);
   if (isParentNode(root)) {
     for (const comment of textlintComments) {
       root.children = insertComment(root.children, comment);
