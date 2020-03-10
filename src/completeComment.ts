@@ -98,19 +98,16 @@ export const insertComment = (
   nodes: AnyTxtNode[],
   comment: TxtNode
 ): AnyTxtNode[] => {
-  let isInserted = false;
   for (let i = 0; i < nodes.length; i++) {
     // If the comment is appeared before the node, insert it before the node.
     if (isAppearedBeforeNode(nodes[i].loc, comment.loc)) {
       nodes.splice(i, 0, comment);
-      isInserted = true;
       return nodes;
     }
     // If the comment is included in the node, try to insert it recursively.
     if (isIncludedByNode(nodes[i].loc, comment.loc)) {
       if (isParentNode(nodes[i])) {
         nodes[i].children = insertComment(nodes[i].children, comment);
-        isInserted = true;
         return nodes;
       }
       // `Parbreak` has no children, even though the range of
