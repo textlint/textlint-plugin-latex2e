@@ -4,7 +4,7 @@ import { parse } from "../src/latex-to-ast";
 import { TextlintKernel } from "@textlint/kernel";
 
 describe("TxtNode AST", () => {
-  test("valid ast", async () => {
+  test("Valid ast", () => {
     const code = `
         \\documentclass{article}
         \\begin{document}
@@ -13,7 +13,7 @@ describe("TxtNode AST", () => {
         `;
     ASTTester.test(parse(code));
   });
-  test("parse empty comment", async () => {
+  test("Parse empty comment", () => {
     const code = `\\begin{document}
         %
         hoge%
@@ -21,19 +21,28 @@ describe("TxtNode AST", () => {
         `;
     ASTTester.test(parse(code));
   });
-  test("Parse display math", async () => {
+  test("Parse display math", () => {
     const code = `\\begin{equation}
           x^2 - 6x + 1 = 0
         \\end{equation}
         `;
     ASTTester.test(parse(code));
   });
-  test("Parse inline math", async () => {
+  test("Parse inline math", () => {
     const code = `\\begin{document}
           $x^2 = 4$
         \\end{document}
         `;
     ASTTester.test(parse(code));
+  });
+  test("Parse document", () => {
+    const code = `\\documentclass{article}
+      \\begin{document}
+      Hello
+      \\end{document}
+      `;
+    ASTTester.test(parse(code));
+    expect(parse(code).raw).toBe(code);
   });
 });
 
