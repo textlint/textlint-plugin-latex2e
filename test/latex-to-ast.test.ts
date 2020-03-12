@@ -2,6 +2,7 @@ import * as ASTTester from "@textlint/ast-tester";
 import "jest";
 import { parse } from "../src/latex-to-ast";
 import { TextlintKernel } from "@textlint/kernel";
+import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
 
 describe("TxtNode AST", () => {
   test("Valid ast", () => {
@@ -35,14 +36,36 @@ describe("TxtNode AST", () => {
         `;
     ASTTester.test(parse(code));
   });
-  test("Parse document", () => {
+  test("Paragraph should not be nested", () => {
     const code = `\\documentclass{article}
       \\begin{document}
-      Hello
+      \\begin{theorem}
+      A Cat is cute.
+      \\end{theorem}
       \\end{document}
       `;
+    function isNested(isParagraph: boolean, node: AnyTxtNode): boolean {
+      switch (node.type) {
+        case ASTNodeTypes.Paragraph:
+          if (isParagraph) {
+            return true;
+          } else {
+            return node.children
+              .map((child: AnyTxtNode) => isNested(true, child))
+              .reduce((a: boolean, b: boolean) => a || b, false);
+          }
+        default:
+          if ("children" in node) {
+            return node.children
+              .map((child: AnyTxtNode) => isNested(isParagraph, child))
+              .reduce((a: boolean, b: boolean) => a || b, false);
+          } else {
+            return false;
+          }
+      }
+    }
     ASTTester.test(parse(code));
-    expect(parse(code).raw).toBe(code);
+    expect(isNested(false, parse(code))).toBe(false);
   });
 });
 
