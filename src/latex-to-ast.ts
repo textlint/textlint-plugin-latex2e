@@ -332,37 +332,80 @@ export const parse = (text: string): TxtParentNode => {
             ];
           case "env":
             switch (node.name) {
-              case "document":
-                return node.content
+              case "document": {
+                const content: AnyTxtNode[] = [];
+                let paragraph: latexParser.Node[] = [];
+                for (const child of node.content) {
+                  if (child.kind === "parbreak") {
+                    content.push({
+                      loc: {
+                        start: {
+                          line: paragraph[0].location?.start.line || 0,
+                          column: paragraph[0].location?.start.column || 0 - 1
+                        },
+                        end: {
+                          line:
+                            paragraph[paragraph.length - 1].location?.start
+                              .line || 0,
+                          column:
+                            paragraph[paragraph.length - 1].location?.start
+                              .column || 0 - 1
+                        }
+                      },
+                      range: [
+                        paragraph[0].location?.start.offset || 0,
+                        paragraph[paragraph.length - 1].location?.end.offset ||
+                          0
+                      ],
+                      raw: text.slice(
+                        paragraph[0].location?.start.offset || 0,
+                        paragraph[paragraph.length - 1].location?.end.offset ||
+                          0
+                      ),
+                      type: ASTNodeTypes.Paragraph,
+                      children: paragraph
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b])
+                    });
+                    paragraph = [];
+                  } else {
+                    paragraph.push(child);
+                  }
+                }
+                content.push({
+                  loc: {
+                    start: {
+                      line: paragraph[0].location?.start.line || 0,
+                      column: paragraph[0].location?.start.column || 0 - 1
+                    },
+                    end: {
+                      line:
+                        paragraph[paragraph.length - 1].location?.start.line ||
+                        0,
+                      column:
+                        paragraph[paragraph.length - 1].location?.start
+                          .column || 0 - 1
+                    }
+                  },
+                  range: [
+                    paragraph[0].location?.start.offset || 0,
+                    paragraph[paragraph.length - 1].location?.end.offset || 0
+                  ],
+                  raw: text.slice(
+                    paragraph[0].location?.start.offset || 0,
+                    paragraph[paragraph.length - 1].location?.end.offset || 0
+                  ),
+                  type: ASTNodeTypes.Paragraph,
+                  children: paragraph
+                    .map(transform)
+                    .reduce((a, b) => [...a, ...b])
+                });
+                return content;
+              }
+              default:
+                return [...node.args, ...node.content]
                   .map(transform)
                   .reduce((a, b) => [...a, ...b], []);
-              default:
-                return [
-                  {
-                    loc: {
-                      start: {
-                        line: node.location.start.line,
-                        column: node.location.start.column - 1
-                      },
-                      end: {
-                        line: node.location.end.line,
-                        column: node.location.end.column - 1
-                      }
-                    },
-                    range: [
-                      node.location.start.offset,
-                      node.location.end.offset
-                    ],
-                    raw: text.slice(
-                      node.location.start.offset,
-                      node.location.end.offset
-                    ),
-                    type: ASTNodeTypes.Paragraph,
-                    children: [...node.args, ...node.content]
-                      .map(transform)
-                      .reduce((a, b) => [...a, ...b], [])
-                  }
-                ];
             }
           case "env.lstlisting":
           case "env.verbatim":
@@ -514,28 +557,6 @@ export const parse = (text: string): TxtParentNode => {
           case "arg.optional":
             return node.content.map(transform).reduce((a, b) => [...a, ...b]);
           case "parbreak":
-            return [{
-              loc: {
-                start: {
-                  line: node.location.start.line,
-                  column: node.location.start.column - 1
-                },
-                end: {
-                  line: node.location.end.line,
-                  column: node.location.end.column - 1
-                }
-              },
-              range: [node.location.start.offset, node.location.end.offset],
-              raw: text.slice(
-                node.location.start.offset,
-                node.location.end.offset
-              ),
-              type: ASTNodeTypes.ParagraphExit,
-              value: text.slice(
-                node.location.start.offset,
-                node.location.end.offset
-              )
-            }]
           case "ignore":
           case "alignmentTab":
           case "activeCharacter":
