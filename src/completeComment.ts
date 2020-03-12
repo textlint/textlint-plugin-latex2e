@@ -22,6 +22,7 @@ import {
   TxtParentNode,
   TxtNodeLineLocation
 } from "@textlint/ast-node-types";
+import traverse = require("traverse");
 
 export const convertCommentToTxtNode = (
   rawText: string,
@@ -135,16 +136,19 @@ export const completeComments = (
   }
   const textlintComments = convertCommentToTxtNode(rawText, comments);
   if (isParentNode(root)) {
+    const copiedRoot = traverse(root).clone();
     for (const comment of textlintComments) {
-      root.children = insertComment(root.children, comment);
+      copiedRoot.children = insertComment(copiedRoot.children, comment);
     }
-    return root;
+    return copiedRoot;
   }
+  // TODO: Reconsider the necessity of the following condition after fixing https://github.com/textlint/textlint-plugin-latex2e/issues/37
   if (Array.isArray(root)) {
+    let nodesWithComments = traverse(root).clone();
     for (const comment of textlintComments) {
-      root = insertComment(root, comment);
+      nodesWithComments = insertComment(nodesWithComments, comment);
     }
-    return root;
+    return nodesWithComments;
   }
   throw Error("Given root node is invalid.");
 };

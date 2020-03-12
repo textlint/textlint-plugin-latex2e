@@ -570,4 +570,73 @@ describe("Test completeComment", () => {
       ASTTester.test(node);
     }
   });
+  test("Not destructive while occuring an error", async () => {
+    const rawText = "% a\n\\begin{document}\n% b\n\\end{document}";
+    const children = [
+      {
+        type: ASTNodeTypes.Str,
+        range: makeRange(21, 25),
+        loc: makeLocation(3, 0, 5, 0),
+        raw: "% b\n",
+        value: "% b"
+      }
+    ];
+    const nodes = [
+      {
+        type: ASTNodeTypes.Document,
+        range: makeRange(4, 39),
+        loc: makeLocation(2, 0, 4, 14),
+        raw: rawText,
+        children: [
+          // Dummy object. It causes error.
+          {
+            type: ASTNodeTypes.Str,
+            range: makeRange(21, 25),
+            loc: makeLocation(3, 0, 5, 0),
+            raw: "% b\n",
+            value: "% b"
+          }
+        ]
+      }
+    ];
+    const comments = [
+      {
+        kind: "comment",
+        content: " a",
+        location: {
+          start: {
+            offset: 0,
+            line: 1,
+            column: 1
+          },
+          end: {
+            offset: 4,
+            line: 2,
+            column: 1
+          }
+        }
+      },
+      {
+        kind: "comment",
+        content: " b",
+        location: {
+          start: {
+            offset: 21,
+            line: 3,
+            column: 1
+          },
+          end: {
+            offset: 25,
+            line: 4,
+            column: 1
+          }
+        }
+      }
+    ];
+    expect(() => {
+      completeComments(nodes, comments as latexParser.Comment[], rawText);
+    }).toThrow();
+    expect(nodes.length).toBe(1);
+    expect(nodes[0].children).toMatchObject(children);
+  });
 });
