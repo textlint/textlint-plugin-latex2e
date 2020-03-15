@@ -2,18 +2,18 @@ import * as ASTTester from "@textlint/ast-tester";
 import "jest";
 import { parse } from "../src/latex-to-ast";
 import { TextlintKernel } from "@textlint/kernel";
+import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
 
 describe("TxtNode AST", () => {
-  test("valid ast", async () => {
+  test("Valid ast", () => {
     const code = `
         \\documentclass{article}
-        \\begin{document}
-        Hello
+        \\begin{document} Hello
         \\end{document}
         `;
     ASTTester.test(parse(code));
   });
-  test("parse empty comment", async () => {
+  test("Parse empty comment", () => {
     const code = `\\begin{document}
         %
         hoge%
@@ -21,19 +21,50 @@ describe("TxtNode AST", () => {
         `;
     ASTTester.test(parse(code));
   });
-  test("Parse display math", async () => {
+  test("Parse display math", () => {
     const code = `\\begin{equation}
           x^2 - 6x + 1 = 0
         \\end{equation}
         `;
     ASTTester.test(parse(code));
   });
-  test("Parse inline math", async () => {
+  test("Parse inline math", () => {
     const code = `\\begin{document}
           $x^2 = 4$
         \\end{document}
         `;
     ASTTester.test(parse(code));
+  });
+  test("Paragraph should not be nested", () => {
+    const code = `\\documentclass{article}
+      \\begin{document}
+      \\begin{theorem}
+      A Cat is cute.
+      \\end{theorem}
+      \\end{document}
+      `;
+    function isNested(isParagraph: boolean, node: AnyTxtNode): boolean {
+      switch (node.type) {
+        case ASTNodeTypes.Paragraph:
+          if (isParagraph) {
+            return true;
+          } else {
+            return node.children
+              .map((child: AnyTxtNode) => isNested(true, child))
+              .reduce((a: boolean, b: boolean) => a || b, false);
+          }
+        default:
+          if ("children" in node) {
+            return node.children
+              .map((child: AnyTxtNode) => isNested(isParagraph, child))
+              .reduce((a: boolean, b: boolean) => a || b, false);
+          } else {
+            return false;
+          }
+      }
+    }
+    ASTTester.test(parse(code));
+    expect(isNested(false, parse(code))).toBe(false);
   });
 });
 
@@ -91,6 +122,12 @@ describe("Fixing document", () => {
         \\documentclass{article}
         \\begin{document}I have a pen.\\end{document}
         `;
+    const result = await kernel.fixText(input, { ...options, ext: ".tex" });
+    expect(result.output).toBe(output);
+  });
+  test("latex code outside of document environment", async () => {
+    const input = `I has a pens.`;
+    const output = `I have a pen.`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });

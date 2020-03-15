@@ -8,407 +8,517 @@
  *
  * textlint-plugin-latex2e is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with textlint-plugin-latex2e.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Location } from "latex-utensils/out/src/pegjs/pegjs_types";
 import { latexParser } from "latex-utensils";
-import traverse from "traverse";
-import { ASTNodeTypes } from "@textlint/ast-node-types";
+import {
+  ASTNodeTypes,
+  AnyTxtNode,
+  TxtParentNode,
+  TxtTextNode,
+  TxtNode
+} from "@textlint/ast-node-types";
 
-// Remove null from node
-const clean = (node: any): any => {
-  if (Array.isArray(node)) {
-    return node.filter(x => x !== null).map(clean);
-  } else if (typeof node === "object") {
-    return Object.entries(node)
-      .map(([key, value]) => ({ [key]: clean(value) }))
-      .reduce((a, b) => Object.assign(a, b));
-  } else {
-    return node;
-  }
-};
+import { complete } from "./complete";
 
-const caculatePosition = (text: string, nchar: number) => {
-  let nl = 0,
-    nc = 0;
-  for (let i = 0; i < nchar; i++) {
-    nl += text[i] === "\n" ? 1 : 0;
-    nc += text[i] === "\n" ? 0 : 1;
-  }
-  return { line: nl, column: nc };
-};
+const normalize = (ast: latexParser.LatexAst): latexParser.LatexAst => ({
+  ...ast,
+  content: ast.content
+    .map(node =>
+      node.kind === "env" && node.name === "document" ? node.content : [node]
+    )
+    .reduce((a, b) => [...a, ...b], [])
+});
 
-// Complete lacked node
-const complete = (text: string, ast: any): any => {
-  return traverse(ast).map(function(node: any) {
-    if (typeof node === "object" && "children" in node) {
-      const children = [];
-      for (let i = 0; i < node.children.length - 1; i++) {
-        const range = [
-          node.children[i].range[1],
-          node.children[i + 1].range[0]
-        ];
-        if (range[0] !== range[1]) {
-          children.push(node.children[i]);
-          children.push({
-            loc: {
-              start: caculatePosition(text, range[0]),
-              end: caculatePosition(text, range[1])
-            },
-            range: range,
-            raw: text.slice(...range),
-            type: ASTNodeTypes.Html,
-            value: text.slice(...range)
-          });
-        }
-      }
-      children.push(node.children[node.children.length - 1]);
-      this.update({ ...node, children });
-    }
-  });
-};
-
-export const parse = (text: string): any => {
-  let ast = latexParser.parse(text);
-  ast = traverse(ast.content).map(function(node: latexParser.Node | Location) {
-    if (typeof node === "object" && "kind" in node) {
-      // Skip translation if node is an instance of Location
-      switch (node.kind) {
-        case "command":
-          switch (node.name) {
-            case "textbf":
-              this.update({
-                loc: {
-                  start: {
-                    line: node.location.start.line,
-                    column: node.location.start.column - 1
-                  },
-                  end: {
-                    line: node.location.end.line,
-                    column: node.location.end.column - 1
-                  }
-                },
-                range: [node.location.start.offset, node.location.end.offset],
-                raw: text.slice(
-                  node.location.start.offset,
-                  node.location.end.offset
-                ),
-                type: ASTNodeTypes.Strong,
-                children: node.args
-              });
-              break;
-            case "textit":
-              this.update({
-                loc: {
-                  start: {
-                    line: node.location.start.line,
-                    column: node.location.start.column - 1
-                  },
-                  end: {
-                    line: node.location.end.line,
-                    column: node.location.end.column - 1
-                  }
-                },
-                range: [node.location.start.offset, node.location.end.offset],
-                raw: text.slice(
-                  node.location.start.offset,
-                  node.location.end.offset
-                ),
-                type: ASTNodeTypes.Emphasis,
-                children: node.args
-              });
-              break;
-            case "institute":
-            case "title":
-            case "author":
-            case "chapter":
-              this.update({
-                depth: 1,
-                loc: {
-                  start: {
-                    line: node.location.start.line,
-                    column: node.location.start.column - 1
-                  },
-                  end: {
-                    line: node.location.end.line,
-                    column: node.location.end.column - 1
-                  }
-                },
-                range: [node.location.start.offset, node.location.end.offset],
-                raw: text.slice(
-                  node.location.start.offset,
-                  node.location.end.offset
-                ),
-                type: ASTNodeTypes.Header,
-                children: node.args
-              });
-              break;
-            case "section":
-              this.update({
-                depth: 2,
-                loc: {
-                  start: {
-                    line: node.location.start.line,
-                    column: node.location.start.column - 1
-                  },
-                  end: {
-                    line: node.location.end.line,
-                    column: node.location.end.column - 1
-                  }
-                },
-                range: [node.location.start.offset, node.location.end.offset],
-                raw: text.slice(
-                  node.location.start.offset,
-                  node.location.end.offset
-                ),
-                type: ASTNodeTypes.Header,
-                children: node.args
-              });
-              break;
-            case "subsection":
-              this.update({
-                depth: 3,
-                loc: {
-                  start: {
-                    line: node.location.start.line,
-                    column: node.location.start.column - 1
-                  },
-                  end: {
-                    line: node.location.end.line,
-                    column: node.location.end.column - 1
-                  }
-                },
-                range: [node.location.start.offset, node.location.end.offset],
-                raw: text.slice(
-                  node.location.start.offset,
-                  node.location.end.offset
-                ),
-                type: ASTNodeTypes.Header,
-                children: node.args
-              });
-              break;
-            case "subsubsection":
-              this.update({
-                depth: 4,
-                loc: {
-                  start: {
-                    line: node.location.start.line,
-                    column: node.location.start.column - 1
-                  },
-                  end: {
-                    line: node.location.end.line,
-                    column: node.location.end.column - 1
-                  }
-                },
-                range: [node.location.start.offset, node.location.end.offset],
-                raw: text.slice(
-                  node.location.start.offset,
-                  node.location.end.offset
-                ),
-                type: ASTNodeTypes.Header,
-                children: node.args
-              });
-              break;
-            default:
-              this.update(null);
-              break;
+const paragraphize = (rootNode: TxtParentNode): TxtParentNode => {
+  let paragraph: AnyTxtNode[] = [];
+  const children: AnyTxtNode[] = [];
+  for (const node of rootNode.children) {
+    if (node.type === "parbreak") {
+      children.push({
+        loc: {
+          start: {
+            line: paragraph[0].loc.start.line,
+            column: paragraph[0].loc.start.column
+          },
+          end: {
+            line: paragraph[paragraph.length - 1].loc.end.line,
+            column: paragraph[paragraph.length - 1].loc.end.column
           }
-          break;
-        case "command.text":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            type: ASTNodeTypes.Paragraph,
-            children: [node.arg]
-          });
-          break;
-        case "env":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            type: ASTNodeTypes.Paragraph,
-            children: [...node.args, ...node.content]
-          });
-          break;
-        case "env.lstlisting":
-        case "env.verbatim":
-        case "env.minted":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            type: ASTNodeTypes.CodeBlock,
-            value: node.content
-          });
-          break;
-        case "env.math.align":
-        case "env.math.aligned":
-        case "displayMath":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            value: latexParser.stringify(node.content),
-            type: ASTNodeTypes.CodeBlock
-          });
-          break;
-        case "superscript":
-        case "subscript":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            type: ASTNodeTypes.Code,
-            children: node.arg
-          });
-          break;
-        case "inlineMath":
-        case "math.matching_delimiters":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            value: latexParser.stringify(node.content),
-            type: ASTNodeTypes.Code
-          });
-          break;
-        case "verb":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            type: ASTNodeTypes.Code,
-            value: node.content
-          });
-          break;
-        case "text.string":
-          this.update({
-            loc: {
-              start: {
-                line: node.location.start.line,
-                column: node.location.start.column - 1
-              },
-              end: {
-                line: node.location.end.line,
-                column: node.location.end.column - 1
-              }
-            },
-            range: [node.location.start.offset, node.location.end.offset],
-            raw: text.slice(
-              node.location.start.offset,
-              node.location.end.offset
-            ),
-            type: ASTNodeTypes.Str,
-            value: node.content
-          });
-          break;
-        case "arg.group":
-          this.update(node.content[0]);
-          break;
-        case "arg.optional":
-          this.update(node.content[0]);
-          break;
-        case "parbreak":
-        case "ignore":
-        case "alignmentTab":
-        case "activeCharacter":
-        case "math.character":
-        case "command.def":
-        case "commandParameter":
-          this.update(null);
-          break;
-      }
+        },
+        range: [
+          paragraph[0].range[0],
+          paragraph[paragraph.length - 1].range[1]
+        ],
+        raw: rootNode.raw.slice(
+          paragraph[0].range[0],
+          paragraph[paragraph.length - 1].range[1]
+        ),
+        type: ASTNodeTypes.Paragraph,
+        children: paragraph
+      });
+      paragraph = [];
+    } else {
+      paragraph.push(node);
     }
+  }
+  children.push({
+    loc: {
+      start: {
+        line: paragraph[0].loc.start.line,
+        column: paragraph[0].loc.start.column
+      },
+      end: {
+        line: paragraph[paragraph.length - 1].loc.end.line,
+        column: paragraph[paragraph.length - 1].loc.end.column
+      }
+    },
+    range: [paragraph[0].range[0], paragraph[paragraph.length - 1].range[1]],
+    raw: rootNode.raw.slice(
+      paragraph[0].range[0],
+      paragraph[paragraph.length - 1].range[1]
+    ),
+    type: ASTNodeTypes.Paragraph,
+    children: paragraph
   });
-  return complete(text, clean(ast)[0]);
+  return { ...rootNode, children };
+};
+
+export const parse = (text: string): TxtParentNode => {
+  const ast = normalize(latexParser.parse(text));
+  return paragraphize(
+    complete(text, {
+      type: ASTNodeTypes.Document,
+      raw: text,
+      range: [0, text.length],
+      loc: {
+        start: {
+          line: ast.content[0].location?.start.line || 0,
+          column: (ast.content[0].location?.start.column || 0) - 1
+        },
+        end: {
+          line: ast.content[ast.content.length - 1].location?.end.line || 0,
+          column:
+            (ast.content[ast.content.length - 1].location?.end.column || 0) - 1
+        }
+      },
+      children: ast.content
+        .map(function transform(
+          node: latexParser.Node
+        ): (TxtTextNode | TxtNode)[] {
+          switch (node.kind) {
+            case "command":
+              switch (node.name) {
+                case "textbf":
+                  return [
+                    {
+                      loc: {
+                        start: {
+                          line: node.location.start.line,
+                          column: node.location.start.column - 1
+                        },
+                        end: {
+                          line: node.location.end.line,
+                          column: node.location.end.column - 1
+                        }
+                      },
+                      range: [
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ],
+                      raw: text.slice(
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ),
+                      type: ASTNodeTypes.Strong,
+                      children: node.args
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b], [])
+                    }
+                  ];
+                case "textit":
+                  return [
+                    {
+                      loc: {
+                        start: {
+                          line: node.location.start.line,
+                          column: node.location.start.column - 1
+                        },
+                        end: {
+                          line: node.location.end.line,
+                          column: node.location.end.column - 1
+                        }
+                      },
+                      range: [
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ],
+                      raw: text.slice(
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ),
+                      type: ASTNodeTypes.Emphasis,
+                      children: node.args
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b], [])
+                    }
+                  ];
+                case "institute":
+                case "title":
+                case "author":
+                  return [
+                    {
+                      loc: {
+                        start: {
+                          line: node.location.start.line,
+                          column: node.location.start.column - 1
+                        },
+                        end: {
+                          line: node.location.end.line,
+                          column: node.location.end.column - 1
+                        }
+                      },
+                      range: [
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ],
+                      raw: text.slice(
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ),
+                      type: ASTNodeTypes.Header,
+                      children: node.args
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b], [])
+                    }
+                  ];
+                case "chapter":
+                  return [
+                    {
+                      depth: 1,
+                      loc: {
+                        start: {
+                          line: node.location.start.line,
+                          column: node.location.start.column - 1
+                        },
+                        end: {
+                          line: node.location.end.line,
+                          column: node.location.end.column - 1
+                        }
+                      },
+                      range: [
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ],
+                      raw: text.slice(
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ),
+                      type: ASTNodeTypes.Header,
+                      children: node.args
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b], [])
+                    }
+                  ];
+                case "section":
+                  return [
+                    {
+                      depth: 2,
+                      loc: {
+                        start: {
+                          line: node.location.start.line,
+                          column: node.location.start.column - 1
+                        },
+                        end: {
+                          line: node.location.end.line,
+                          column: node.location.end.column - 1
+                        }
+                      },
+                      range: [
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ],
+                      raw: text.slice(
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ),
+                      type: ASTNodeTypes.Header,
+                      children: node.args
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b], [])
+                    }
+                  ];
+                case "subsection":
+                  return [
+                    {
+                      depth: 3,
+                      loc: {
+                        start: {
+                          line: node.location.start.line,
+                          column: node.location.start.column - 1
+                        },
+                        end: {
+                          line: node.location.end.line,
+                          column: node.location.end.column - 1
+                        }
+                      },
+                      range: [
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ],
+                      raw: text.slice(
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ),
+                      type: ASTNodeTypes.Header,
+                      children: node.args
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b], [])
+                    }
+                  ];
+                case "subsubsection":
+                  return [
+                    {
+                      depth: 4,
+                      loc: {
+                        start: {
+                          line: node.location.start.line,
+                          column: node.location.start.column - 1
+                        },
+                        end: {
+                          line: node.location.end.line,
+                          column: node.location.end.column - 1
+                        }
+                      },
+                      range: [
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ],
+                      raw: text.slice(
+                        node.location.start.offset,
+                        node.location.end.offset
+                      ),
+                      type: ASTNodeTypes.Header,
+                      children: node.args
+                        .map(transform)
+                        .reduce((a, b) => [...a, ...b], [])
+                    }
+                  ];
+                default:
+                  return [];
+              }
+            case "command.text":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  type: ASTNodeTypes.Str,
+                  children: transform(node.arg)
+                }
+              ];
+            case "env":
+              switch (node.name) {
+                default:
+                  return [...node.args, ...node.content]
+                    .map(transform)
+                    .reduce((a, b) => [...a, ...b], []);
+              }
+            case "env.lstlisting":
+            case "env.verbatim":
+            case "env.minted":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  type: ASTNodeTypes.CodeBlock,
+                  value: node.content
+                }
+              ];
+            case "env.math.align":
+            case "env.math.aligned":
+            case "displayMath":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  value: text.slice(
+                    node.content[0].location?.start.offset,
+                    node.content[node.content.length - 1].location?.end.offset
+                  ),
+                  type: ASTNodeTypes.CodeBlock
+                }
+              ];
+            case "superscript":
+            case "subscript":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  type: ASTNodeTypes.Code,
+                  children: node.arg === undefined ? [] : transform(node.arg)
+                }
+              ];
+            case "inlineMath":
+            case "math.math_delimiters":
+            case "math.matching_delimiters":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  value: text.slice(
+                    node.content[0].location?.start.offset,
+                    node.content[node.content.length - 1].location?.end.offset
+                  ),
+                  type: ASTNodeTypes.Code
+                }
+              ];
+            case "verb":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  type: ASTNodeTypes.Code,
+                  value: node.content
+                }
+              ];
+            case "text.string":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  type: ASTNodeTypes.Str,
+                  value: node.content
+                }
+              ];
+            case "arg.group":
+              return node.content.map(transform).reduce((a, b) => [...a, ...b]);
+            case "arg.optional":
+              return node.content.map(transform).reduce((a, b) => [...a, ...b]);
+            case "parbreak":
+              return [
+                {
+                  loc: {
+                    start: {
+                      line: node.location.start.line,
+                      column: node.location.start.column - 1
+                    },
+                    end: {
+                      line: node.location.end.line,
+                      column: node.location.end.column - 1
+                    }
+                  },
+                  range: [node.location.start.offset, node.location.end.offset],
+                  raw: text.slice(
+                    node.location.start.offset,
+                    node.location.end.offset
+                  ),
+                  type: "parbreak"
+                }
+              ];
+            case "ignore":
+            case "alignmentTab":
+            case "activeCharacter":
+            case "math.character":
+            case "command.def":
+            case "commandParameter":
+              return [];
+          }
+        })
+        .reduce((a, b) => [...a, ...b], [])
+    })
+  );
 };
