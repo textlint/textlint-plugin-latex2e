@@ -22,7 +22,6 @@ import {
   TxtParentNode,
   TxtNodeLineLocation
 } from "@textlint/ast-node-types";
-import traverse = require("traverse");
 
 export const convertCommentToTxtNode = (
   rawText: string,
@@ -98,9 +97,12 @@ export const isParentNode = (node: any): node is TxtParentNode => {
 };
 
 export const insertComment = (
-  nodes: AnyTxtNode[],
-  comment: TxtNode
+  comment: TxtNode,
+  nodes?: AnyTxtNode[]
 ): AnyTxtNode[] => {
+  if (!nodes) {
+    return insertComment(comment, []);
+  }
   for (let i = 0; i < nodes.length; i++) {
     // If the comment is appeared before the node, insert it before the node.
     if (isAppearedBeforeNode(nodes[i].loc, comment.loc)) {
@@ -110,7 +112,7 @@ export const insertComment = (
     // If the comment is included in the node, try to insert it recursively.
     if (isIncludedByNode(nodes[i].loc, comment.loc)) {
       if (isParentNode(nodes[i])) {
-        nodes[i].children = insertComment(nodes[i].children, comment);
+        nodes[i].children = insertComment(comment, nodes[i].children);
         return nodes;
       }
       // `Parbreak` has no children, even though the range of
@@ -127,7 +129,7 @@ export const insertComment = (
 
 // Mapping all comments to the given AST.
 export const completeComments = (
-  root: any,
+  root: TxtParentNode,
   comments: latexParser.Comment[],
   rawText: string
 ): any => {
@@ -135,20 +137,9 @@ export const completeComments = (
     return root;
   }
   const textlintComments = convertCommentToTxtNode(rawText, comments);
-  if (isParentNode(root)) {
-    const copiedRoot = traverse(root).clone();
-    for (const comment of textlintComments) {
-      copiedRoot.children = insertComment(copiedRoot.children, comment);
-    }
-    return copiedRoot;
+  const copiedRoot = JSON.parse(JSON.stringify(root));
+  for (const comment of textlintComments) {
+    copiedRoot.children = insertComment(comment, copiedRoot.children);
   }
-  // TODO: Reconsider the necessity of the following condition after fixing https://github.com/textlint/textlint-plugin-latex2e/issues/37
-  if (Array.isArray(root)) {
-    let nodesWithComments = traverse(root).clone();
-    for (const comment of textlintComments) {
-      nodesWithComments = insertComment(nodesWithComments, comment);
-    }
-    return nodesWithComments;
-  }
-  throw Error("Given root node is invalid.");
+  return copiedRoot;
 };
