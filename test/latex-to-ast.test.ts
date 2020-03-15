@@ -72,7 +72,26 @@ describe("TxtNode AST", () => {
           abcd
         \\end{document}
         `;
-    ASTTester.test(parse(code));
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[1].type).toBe(ASTNodeTypes.Paragraph);
+  });
+  test("Parse comments (outside of document)", () => {
+    const code = `
+        \\documentclass{article}
+        % comment
+        \\begin{document}
+          abcd
+        \\end{document}
+        % comment
+        `;
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children.length).toBe(3);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[1].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Comment);
   });
 });
 
@@ -136,6 +155,40 @@ describe("Fixing document", () => {
   test("latex code outside of document environment", async () => {
     const input = `I has a pens.`;
     const output = `I have a pen.`;
+    const result = await kernel.fixText(input, { ...options, ext: ".tex" });
+    expect(result.output).toBe(output);
+  });
+  test("latex code with comments", async () => {
+    const input = `
+        \\documentclass{article}
+        \\begin{document}
+          % comment
+          I have a pen.
+        \\end{document}`;
+    const output = `
+        \\documentclass{article}
+        \\begin{document}
+          % comment
+          I have a pen.
+        \\end{document}`;
+    const result = await kernel.fixText(input, { ...options, ext: ".tex" });
+    expect(result.output).toBe(output);
+  });
+  test("latex code with comments (outside of document)", async () => {
+    const input = `
+        \\documentclass{article}
+        % comment
+        \\begin{document}
+          I have a pen.
+        \\end{document}
+        % comment`;
+    const output = `
+        \\documentclass{article}
+        % comment
+        \\begin{document}
+          I have a pen.
+        \\end{document}
+        % comment`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });

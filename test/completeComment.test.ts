@@ -409,7 +409,7 @@ describe("Test completeComment", () => {
     const nodes = {
       type: ASTNodeTypes.Document,
       range: makeRange(0, 56),
-      loc: makeLocation(1, 0, 9, 0),
+      loc: makeLocation(3, 0, 7, 0),
       raw: rawText,
       children: []
     };
