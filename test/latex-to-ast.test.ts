@@ -8,8 +8,7 @@ describe("TxtNode AST", () => {
   test("Valid ast", () => {
     const code = `
         \\documentclass{article}
-        \\begin{document}
-        Hello
+        \\begin{document} Hello
         \\end{document}
         `;
     ASTTester.test(parse(code));
@@ -123,6 +122,12 @@ describe("Fixing document", () => {
         \\documentclass{article}
         \\begin{document}I have a pen.\\end{document}
         `;
+    const result = await kernel.fixText(input, { ...options, ext: ".tex" });
+    expect(result.output).toBe(output);
+  });
+  test("latex code outside of document environment", async () => {
+    const input = `I has a pens.`;
+    const output = `I have a pen.`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });
