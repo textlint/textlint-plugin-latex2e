@@ -175,15 +175,14 @@ describe("Fixing document", () => {
     expect(result.output).toBe(output);
   });
   test("latex code with comments (outside of document)", async () => {
-    const input = `
-        \\documentclass{article}
+    // FIX: A new line before \documentclass causes an error.
+    const input = `\\documentclass{article}
         % comment
         \\begin{document}
           I have a pen.
         \\end{document}
         % comment`;
-    const output = `
-        \\documentclass{article}
+    const output = `\\documentclass{article}
         % comment
         \\begin{document}
           I have a pen.
