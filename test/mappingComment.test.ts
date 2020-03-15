@@ -395,12 +395,16 @@ describe("Test completeComment", () => {
       }
     ];
     const expected = JSON.parse(JSON.stringify(nodes));
-    expected.children = [expectedComments[0]];
+    expected[0].children = [expectedComments[0]];
     const actual = completeComments(
       nodes,
       comments as latexParser.Comment[],
       rawText
     );
+    expect(actual).toMatchObject(expected);
+    for (const node of nodes) {
+      ASTTester.test(node);
+    }
   });
   test("Multi comments", async () => {
     const rawText =
