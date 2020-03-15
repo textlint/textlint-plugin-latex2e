@@ -3,7 +3,8 @@ import "jest";
 import {
   ASTNodeTypes,
   TxtNodeLineLocation,
-  TextNodeRange
+  TextNodeRange,
+  TxtParentNode
 } from "@textlint/ast-node-types";
 import { latexParser } from "latex-utensils";
 import {
@@ -226,9 +227,9 @@ describe("Test insertComment", () => {
     const expected = JSON.parse(JSON.stringify(nodes));
     expected[0].children.splice(1, 0, comment);
 
-    const actual = insertComment(nodes, comment);
+    const actual = insertComment(comment, nodes);
     expect(actual).toMatchObject(expected);
-    for (const node of nodes) {
+    for (const node of actual) {
       ASTTester.test(node);
     }
   });
@@ -289,9 +290,9 @@ describe("Test insertComment", () => {
     const expected = JSON.parse(JSON.stringify(nodes));
     expected[0].children[0].children.push(comment);
 
-    const actual = insertComment(nodes, comment);
+    const actual = insertComment(comment, nodes);
     expect(actual).toMatchObject(expected);
-    for (const node of nodes) {
+    for (const node of actual) {
       ASTTester.test(node);
     }
   });
@@ -318,9 +319,9 @@ describe("Test insertComment", () => {
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.splice(0, 0, comment);
 
-    const actual = insertComment(nodes, comment);
+    const actual = insertComment(comment, nodes);
     expect(actual).toMatchObject(expected);
-    for (const node of nodes) {
+    for (const node of actual) {
       ASTTester.test(node);
     }
   });
@@ -347,9 +348,9 @@ describe("Test insertComment", () => {
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.push(comment);
 
-    const actual = insertComment(nodes, comment);
+    const actual = insertComment(comment, nodes);
     expect(actual).toMatchObject(expected);
-    for (const node of nodes) {
+    for (const node of actual) {
       ASTTester.test(node);
     }
   });
@@ -358,15 +359,13 @@ describe("Test insertComment", () => {
 describe("Test completeComment", () => {
   test("One comment", async () => {
     const rawText = "\\begin{document}\n% comment\n\\end{document}";
-    const nodes = [
-      {
-        type: ASTNodeTypes.Document,
-        range: makeRange(0, 52),
-        loc: makeLocation(1, 0, 3, 14),
-        raw: "",
-        children: []
-      }
-    ];
+    const nodes = {
+      type: ASTNodeTypes.Document,
+      range: makeRange(0, 52),
+      loc: makeLocation(1, 0, 3, 14),
+      raw: rawText,
+      children: []
+    };
     const comments = [
       {
         kind: "comment",
@@ -395,29 +394,25 @@ describe("Test completeComment", () => {
       }
     ];
     const expected = JSON.parse(JSON.stringify(nodes));
-    expected[0].children = [expectedComments[0]];
+    expected.children = [expectedComments[0]];
     const actual = completeComments(
       nodes,
       comments as latexParser.Comment[],
       rawText
     );
     expect(actual).toMatchObject(expected);
-    for (const node of nodes) {
-      ASTTester.test(node);
-    }
+    ASTTester.test(actual);
   });
   test("Multi comments", async () => {
     const rawText =
       "% a\n% b\n\\begin{document}\n% c\n% d\n\\end{document}\n% e\n% f";
-    const nodes = [
-      {
-        type: ASTNodeTypes.Document,
-        range: makeRange(8, 47),
-        loc: makeLocation(3, 0, 6, 14),
-        raw: "\\begin{document}\n% c\n% d\n\\end{document}\n",
-        children: []
-      }
-    ];
+    const nodes = {
+      type: ASTNodeTypes.Document,
+      range: makeRange(0, 56),
+      loc: makeLocation(1, 0, 9, 0),
+      raw: rawText,
+      children: []
+    };
     const comments = [
       {
         kind: "comment",
@@ -516,7 +511,8 @@ describe("Test completeComment", () => {
         }
       }
     ];
-    const expected = [
+    const expected = JSON.parse(JSON.stringify(nodes));
+    expected.children = [
       {
         type: ASTNodeTypes.Comment,
         range: makeRange(0, 4),
@@ -531,7 +527,20 @@ describe("Test completeComment", () => {
         raw: "% b\n",
         value: " b"
       },
-      JSON.parse(JSON.stringify(nodes[0])),
+      {
+        type: ASTNodeTypes.Comment,
+        range: makeRange(25, 29),
+        loc: makeLocation(4, 0, 5, 0),
+        raw: "% c\n",
+        value: " c"
+      },
+      {
+        type: ASTNodeTypes.Comment,
+        range: makeRange(29, 33),
+        loc: makeLocation(5, 0, 6, 0),
+        raw: "% d\n",
+        value: " d"
+      },
       {
         type: ASTNodeTypes.Comment,
         range: makeRange(48, 52),
@@ -547,22 +556,6 @@ describe("Test completeComment", () => {
         value: " f"
       }
     ];
-    expected[2].children = [
-      {
-        type: ASTNodeTypes.Comment,
-        range: makeRange(25, 29),
-        loc: makeLocation(4, 0, 5, 0),
-        raw: "% c\n",
-        value: " c"
-      },
-      {
-        type: ASTNodeTypes.Comment,
-        range: makeRange(29, 33),
-        loc: makeLocation(5, 0, 6, 0),
-        raw: "% d\n",
-        value: " d"
-      }
-    ];
 
     const actual = completeComments(
       nodes,
@@ -570,9 +563,7 @@ describe("Test completeComment", () => {
       rawText
     );
     expect(actual).toMatchObject(expected);
-    for (const node of nodes) {
-      ASTTester.test(node);
-    }
+    ASTTester.test(actual);
   });
   test("Not destructive while occuring an error", async () => {
     const rawText = "% a\n\\begin{document}\n% b\n\\end{document}";
@@ -585,24 +576,22 @@ describe("Test completeComment", () => {
         value: "% b"
       }
     ];
-    const nodes = [
-      {
-        type: ASTNodeTypes.Document,
-        range: makeRange(4, 39),
-        loc: makeLocation(2, 0, 4, 14),
-        raw: rawText,
-        children: [
-          // Dummy object. It causes error.
-          {
-            type: ASTNodeTypes.Str,
-            range: makeRange(21, 25),
-            loc: makeLocation(3, 0, 5, 0),
-            raw: "% b\n",
-            value: "% b"
-          }
-        ]
-      }
-    ];
+    const nodes = {
+      type: ASTNodeTypes.Document,
+      range: makeRange(0, 39),
+      loc: makeLocation(1, 0, 4, 14),
+      raw: rawText,
+      children: [
+        // Dummy object. It causes error.
+        {
+          type: ASTNodeTypes.Str,
+          range: makeRange(21, 25),
+          loc: makeLocation(3, 0, 5, 0),
+          raw: "% b\n",
+          value: "% b"
+        }
+      ]
+    };
     const comments = [
       {
         kind: "comment",
@@ -640,7 +629,7 @@ describe("Test completeComment", () => {
     expect(() => {
       completeComments(nodes, comments as latexParser.Comment[], rawText);
     }).toThrow();
-    expect(nodes.length).toBe(1);
-    expect(nodes[0].children).toMatchObject(children);
+    expect(nodes.children.length).toBe(1);
+    expect(nodes.children).toMatchObject(children);
   });
 });
