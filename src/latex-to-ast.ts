@@ -65,7 +65,8 @@ const paragraphize = (rootNode: TxtParentNode): TxtParentNode => {
       paragraph.push(node);
     }
   }
-  children.push({
+  if (paragraph.length > 0) {
+    children.push({
     loc: {
       start: {
         line: paragraph[0].loc.start.line,
@@ -83,7 +84,8 @@ const paragraphize = (rootNode: TxtParentNode): TxtParentNode => {
     ),
     type: ASTNodeTypes.Paragraph,
     children: paragraph
-  });
+    });
+  }
   return { ...rootNode, children };
 };
 
