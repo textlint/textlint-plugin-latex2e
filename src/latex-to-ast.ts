@@ -67,23 +67,23 @@ const paragraphize = (rootNode: TxtParentNode): TxtParentNode => {
   }
   if (paragraph.length > 0) {
     children.push({
-    loc: {
-      start: {
-        line: paragraph[0].loc.start.line,
-        column: paragraph[0].loc.start.column
+      loc: {
+        start: {
+          line: paragraph[0].loc.start.line,
+          column: paragraph[0].loc.start.column
+        },
+        end: {
+          line: paragraph[paragraph.length - 1].loc.end.line,
+          column: paragraph[paragraph.length - 1].loc.end.column
+        }
       },
-      end: {
-        line: paragraph[paragraph.length - 1].loc.end.line,
-        column: paragraph[paragraph.length - 1].loc.end.column
-      }
-    },
-    range: [paragraph[0].range[0], paragraph[paragraph.length - 1].range[1]],
-    raw: rootNode.raw.slice(
-      paragraph[0].range[0],
-      paragraph[paragraph.length - 1].range[1]
-    ),
-    type: ASTNodeTypes.Paragraph,
-    children: paragraph
+      range: [paragraph[0].range[0], paragraph[paragraph.length - 1].range[1]],
+      raw: rootNode.raw.slice(
+        paragraph[0].range[0],
+        paragraph[paragraph.length - 1].range[1]
+      ),
+      type: ASTNodeTypes.Paragraph,
+      children: paragraph
     });
   }
   return { ...rootNode, children };
