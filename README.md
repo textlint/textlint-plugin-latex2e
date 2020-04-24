@@ -2,9 +2,7 @@
 [![npm](https://img.shields.io/npm/v/textlint-plugin-latex2e.svg)](https://www.npmjs.com/package/textlint-plugin-latex2e)
 [![actions](https://github.com/fgborges/textlint-plugin-latex2e/workflows/Node%20CI/badge.svg)](https://github.com/fgborges/textlint-plugins-latex2e/actions)
 
-This plugin contains rough LaTeX parser which doesn't cover all syntax, but it's enough.
-
-We welcome your contribution for adding new syntax! Thanks.
+textlint-plugin-latex2e depends on [the LaTeX parser](https://github.com/tamuratak/latex-utensils) since v1.0.0!
 
 ## Installation
 
@@ -17,18 +15,6 @@ And add to `.textlintrc`
 ```
    plugins: ["latex2e"]
 ```
-
-## Known Issue
-
-This kind of syntax cannot be interpreted correctly.
-
-```latex
-\newenvironment{A}
-{\begin{B}}
-{\end{B}}
-```
-
-To avoid this issue, you can write them out of the file with `\input` command.
 
 ## Copyright
 
