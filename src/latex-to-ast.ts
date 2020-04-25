@@ -428,8 +428,8 @@ export const parse = (text: string): TxtParentNode => {
         .map(transform(text))
         .reduce((a, b) => [...a, ...b], [])
     },
-    completeBlank(text),
     paragraphize,
-    completeComments(comments)(text)
+    completeComments(comments)(text),
+    completeBlank(text)
   );
 };
