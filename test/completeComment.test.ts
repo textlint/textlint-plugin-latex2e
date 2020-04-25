@@ -368,7 +368,7 @@ describe("Test completeComment", () => {
     };
     const comments = [
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " comment",
         location: {
           start: {
@@ -395,11 +395,7 @@ describe("Test completeComment", () => {
     ];
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.children = [expectedComments[0]];
-    const actual = completeComments(
-      nodes,
-      comments as latexParser.Comment[],
-      rawText
-    );
+    const actual = completeComments(comments)(rawText)(nodes);
     expect(actual).toMatchObject(expected);
     ASTTester.test(actual);
   });
@@ -415,7 +411,7 @@ describe("Test completeComment", () => {
     };
     const comments = [
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " a",
         location: {
           start: {
@@ -431,7 +427,7 @@ describe("Test completeComment", () => {
         }
       },
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " b",
         location: {
           start: {
@@ -447,7 +443,7 @@ describe("Test completeComment", () => {
         }
       },
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " c",
         location: {
           start: {
@@ -463,7 +459,7 @@ describe("Test completeComment", () => {
         }
       },
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " d",
         location: {
           start: {
@@ -479,7 +475,7 @@ describe("Test completeComment", () => {
         }
       },
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " e",
         location: {
           start: {
@@ -495,7 +491,7 @@ describe("Test completeComment", () => {
         }
       },
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " f",
         location: {
           start: {
@@ -557,11 +553,7 @@ describe("Test completeComment", () => {
       }
     ];
 
-    const actual = completeComments(
-      nodes,
-      comments as latexParser.Comment[],
-      rawText
-    );
+    const actual = completeComments(comments)(rawText)(nodes);
     expect(actual).toMatchObject(expected);
     ASTTester.test(actual);
   });
@@ -594,7 +586,7 @@ describe("Test completeComment", () => {
     };
     const comments = [
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " a",
         location: {
           start: {
@@ -610,7 +602,7 @@ describe("Test completeComment", () => {
         }
       },
       {
-        kind: "comment",
+        kind: "comment" as const,
         content: " b",
         location: {
           start: {
@@ -627,7 +619,7 @@ describe("Test completeComment", () => {
       }
     ];
     expect(() => {
-      completeComments(nodes, comments as latexParser.Comment[], rawText);
+      completeComments(comments)(rawText)(nodes);
     }).toThrow();
     expect(nodes.children.length).toBe(1);
     expect(nodes.children).toMatchObject(children);

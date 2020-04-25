@@ -14,28 +14,19 @@
  */
 
 import { ASTNodeTypes, TxtNode } from "@textlint/ast-node-types";
+import calculatePosition from "./calculatePosition";
 
-const caculatePosition = (text: string, nchar: number) => {
-  let nl = 0,
-    nc = 0;
-  for (let i = 0; i < nchar; i++) {
-    nl = text[i] === "\n" ? nl + 1 : nl + 0;
-    nc = text[i] === "\n" ? 0 : nc + 1;
-  }
-  return { line: nl + 1, column: nc };
-};
-
-export const complete = <T extends TxtNode>(text: string, node: T): T => {
+const completeBlank = (text: string) => <T extends TxtNode>(node: T): T => {
   if ("children" in node) {
     const children = [];
     for (let i = 0; i < node.children.length - 1; i++) {
       const range = [node.children[i].range[1], node.children[i + 1].range[0]];
       if (range[0] !== range[1]) {
-        children.push(complete(text, node.children[i]));
+        children.push(completeBlank(text)(node.children[i]));
         children.push({
           loc: {
-            start: caculatePosition(text, range[0]),
-            end: caculatePosition(text, range[1])
+            start: calculatePosition(text, range[0]),
+            end: calculatePosition(text, range[1])
           },
           range: range,
           raw: text.slice(...range),
@@ -43,12 +34,14 @@ export const complete = <T extends TxtNode>(text: string, node: T): T => {
           value: text.slice(...range)
         });
       } else {
-        children.push(complete(text, node.children[i]));
+        children.push(completeBlank(text)(node.children[i]));
       }
     }
-    children.push(complete(text, node.children[node.children.length - 1]));
+    children.push(completeBlank(text)(node.children[node.children.length - 1]));
     return { ...node, children };
   } else {
     return node;
   }
 };
+
+export default completeBlank;
