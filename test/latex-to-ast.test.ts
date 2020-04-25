@@ -5,6 +5,28 @@ import { TextlintKernel } from "@textlint/kernel";
 import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
 
 describe("TxtNode AST", () => {
+  test("Issue 42: TypeError is occurred if `Parbreak` node appears before the first appearance of actual sentence", () => {
+    const code1 = `
+        \\documentclass{article}
+        
+        \\begin{document}
+          \\begin{abstract}
+            abcd
+          \\end{abstract}
+        \\end{document}
+        `;
+    const code2 = `
+        \\documentclass{article}
+        \\begin{document}
+        
+          \\begin{abstract}
+            abcd
+          \\end{abstract}
+        \\end{document}
+        `;
+    ASTTester.test(parse(code1));
+    ASTTester.test(parse(code2));
+  });
   test("Valid ast", () => {
     const code = `
         \\documentclass{article}
