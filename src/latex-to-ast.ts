@@ -26,6 +26,7 @@ import completeBlank from "./completeBlank";
 import paragraphize from "./paragraphize";
 import calculatePosition from "./calculatePosition";
 import { pipe } from "fp-ts/lib/pipeable";
+import { tuple } from "fp-ts/lib/function";
 
 const normalize = (latexAst: latexParser.LatexAst): latexParser.LatexAst => ({
   ...latexAst,
@@ -419,7 +420,7 @@ export const parse = (text: string): TxtParentNode => {
     {
       type: ASTNodeTypes.Document,
       raw: text,
-      range: [0, text.length] as [number, number],
+      range: tuple(0, text.length),
       loc: {
         start: calculatePosition(text, 0),
         end: calculatePosition(text, text.length - 1)
