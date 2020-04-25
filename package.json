@@ -19,6 +19,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@textlint/ast-node-types": "^4.2.5",
+    "fp-ts": "^2.5.3",
     "latex-utensils": "^2.0.0-beta.4"
   },
   "devDependencies": {

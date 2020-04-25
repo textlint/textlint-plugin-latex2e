@@ -128,11 +128,9 @@ export const insertComment = (
 };
 
 // Mapping all comments to the given AST.
-export const completeComments = (
-  root: TxtParentNode,
-  comments: latexParser.Comment[],
+export const completeComments = (comments: latexParser.Comment[]) => (
   rawText: string
-): any => {
+) => (root: TxtParentNode): any => {
   if (comments.length === 0) {
     return root;
   }
