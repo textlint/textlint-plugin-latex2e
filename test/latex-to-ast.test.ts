@@ -115,6 +115,20 @@ describe("TxtNode AST", () => {
     expect(actual.children[1].type).toBe(ASTNodeTypes.Paragraph);
     expect(actual.children[2].type).toBe(ASTNodeTypes.Comment);
   });
+  test("Two lines of comments between other environments", () => {
+    const code = `
+        \\documentclass{article}
+        \\title{a}
+        % first comment
+        % second comment
+        \\author{b}
+        `;
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children.length).toBe(4);
+    expect(actual.children[1].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Comment);
+  });
 });
 
 describe("Fixing document", () => {
