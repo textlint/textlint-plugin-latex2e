@@ -2,13 +2,13 @@
   "name": "textlint-plugin-latex2e",
   "version": "1.0.0-alpha.1",
   "description": "A textlint plugin for LaTeX2e",
-  "main": "lib/src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint --fix src/**/*.ts",
     "build": "tsc",
     "test": "jest",
-    "prepare": "npm run build",
+    "clean": "rimraf lib",
+    "prepare": "npm run clean && npm run build",
     "prepublishOnly": "npm test"
   },
   "keywords": [
@@ -36,6 +36,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "jest": "^25.1.0",
     "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
     "textlint-rule-ginger": "^2.2.1",
     "textlint-rule-spellcheck-tech-word": "^5.0.0",
     "ts-jest": "^25.2.1",
