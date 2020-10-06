@@ -15,7 +15,7 @@
     "textlint",
     "latex"
   ],
-  "author": "nzt",
+  "author": "TANIGUCHI Masaya",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@textlint/ast-node-types": "^4.2.5",
@@ -48,10 +48,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nzt/textlint-plugin-latex2e.git"
+    "url": "git+https://github.com/textlint/textlint-plugin-latex2e.git"
   },
   "bugs": {
-    "url": "https://github.com/nzt/textlint-plugin-latex2e/issues"
+    "url": "https://github.com/textlint/textlint-plugin-latex2e/issues"
   },
-  "homepage": "https://github.com/nzt/textlint-plugin-latex2e#readme"
+  "homepage": "https://github.com/textlint/textlint-plugin-latex2e#readme"
 }
