@@ -141,7 +141,7 @@ describe("Fixing document", () => {
       { pluginId: "latex2e", plugin: require("../src").default },
       {
         pluginId: "markdown",
-        plugin: require("@textlint/textlint-plugin-markdown")
+        plugin: require("@textlint/textlint-plugin-markdown").default
       }
     ],
     rules: [
