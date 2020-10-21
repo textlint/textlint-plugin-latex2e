@@ -27,7 +27,7 @@
     "@textlint/kernel": "^3.3.6",
     "@textlint/textlint-plugin-markdown": "^5.2.6",
     "@textlint/types": "^1.4.5",
-    "@types/jest": "^26.0.14",
+    "@types/jest": "^26.0.15",
     "@types/node": "^14.11.4",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
@@ -41,7 +41,8 @@
     "textlint-rule-spellcheck-tech-word": "^5.0.0",
     "ts-jest": "^26.4.1",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "typescript-language-server": "^0.4.0"
   },
   "directories": {
     "test": "test"

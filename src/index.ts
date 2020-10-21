@@ -16,5 +16,4 @@
  */
 import { LaTeXProcessor } from "./LaTeXProcessor";
 import { TextlintPluginCreator } from "@textlint/types";
-const creator: TextlintPluginCreator = { Processor: LaTeXProcessor };
-export default creator;
+export default { Processor: LaTeXProcessor } as TextlintPluginCreator;
