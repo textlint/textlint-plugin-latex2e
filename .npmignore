@@ -3,10 +3,11 @@ test/
 node_modules/
 coverage/
 tsconfig.json
-jest.config.json
+jest.config.js
 .eslintrc.json
 .editorconfig
 .gitignore
 .devcontainer
 .github
 .vscode
+*~
