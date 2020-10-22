@@ -6,7 +6,6 @@ on:
       - "**.ts"
       - ".eslintrc.json"
       - "package.json"
-
 jobs:
   lint:
     runs-on: ubuntu-18.04
@@ -16,10 +15,10 @@ jobs:
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: " 13.x"
-    - name: yarn install, and lint
+        node-version: "14.x"
+    - name: npm install, and lint
       run: |
-        yarn install
-        yarn lint
+        npm install
+        npm run lint
       env:
         CI: true
