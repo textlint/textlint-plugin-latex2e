@@ -16,7 +16,6 @@
 import { latexParser } from "latex-utensils";
 import {
   ASTNodeTypes,
-  AnyTxtNode,
   TxtParentNode,
   TxtTextNode,
   TxtNode
