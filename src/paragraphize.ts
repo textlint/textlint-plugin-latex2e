@@ -1,10 +1,10 @@
 import {
   ASTNodeTypes,
   AnyTxtNode,
-  TxtParentNode
+  TxtParentNode,
 } from "@textlint/ast-node-types";
 import { head, array, last } from "fp-ts/lib/Array";
-import { getOrElse, option, map } from "fp-ts/lib/Option";
+import { option, map } from "fp-ts/lib/Option";
 import { pipe } from "fp-ts/lib/pipeable";
 
 export default (rootNode: TxtParentNode): TxtParentNode => {
@@ -17,12 +17,12 @@ export default (rootNode: TxtParentNode): TxtParentNode => {
         children.push({
           loc: {
             start: headNode.loc.start,
-            end: lastNode.loc.end
+            end: lastNode.loc.end,
           },
           range: [headNode.range[0], lastNode.range[1]],
           raw: rootNode.raw.slice(headNode.range[0], lastNode.range[1]),
           type: ASTNodeTypes.Paragraph,
-          children: paragraph
+          children: paragraph,
         });
       })
     );

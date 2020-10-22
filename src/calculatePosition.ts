@@ -1,4 +1,9 @@
-export default (text: string, nchar: number) => {
+interface Position {
+  line: number;
+  column: number;
+}
+
+export default (text: string, nchar: number): Position => {
   let nl = 0,
     nc = 0;
   for (let i = 0; i < nchar; i++) {

@@ -26,12 +26,12 @@ const completeBlank = (text: string) => <T extends TxtNode>(node: T): T => {
         children.push({
           loc: {
             start: calculatePosition(text, range[0]),
-            end: calculatePosition(text, range[1])
+            end: calculatePosition(text, range[1]),
           },
           range: range,
           raw: text.slice(...range),
           type: ASTNodeTypes.Html,
-          value: text.slice(...range)
+          value: text.slice(...range),
         });
       } else {
         children.push(completeBlank(text)(node.children[i]));
