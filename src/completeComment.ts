@@ -20,7 +20,7 @@ import {
   AnyTxtNode,
   TxtNode,
   TxtParentNode,
-  TxtNodeLineLocation
+  TxtNodeLineLocation,
 } from "@textlint/ast-node-types";
 
 export const convertCommentToTxtNode = (
@@ -36,12 +36,12 @@ export const convertCommentToTxtNode = (
         loc: {
           start: {
             line: comment.location.start.line,
-            column: comment.location.start.column - 1
+            column: comment.location.start.column - 1,
           },
           end: {
             line: comment.location.end.line,
-            column: comment.location.end.column - 1
-          }
+            column: comment.location.end.column - 1,
+          },
         },
         range: [comment.location.start.offset, comment.location.end.offset],
         raw: rawText.slice(
@@ -49,7 +49,7 @@ export const convertCommentToTxtNode = (
           comment.location.end.offset
         ),
         value: comment.content,
-        type: ASTNodeTypes.Comment
+        type: ASTNodeTypes.Comment,
       };
     }
   );

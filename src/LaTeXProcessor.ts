@@ -16,30 +16,32 @@
  */
 import {
   TextlintPluginProcessor,
-  TextlintPluginOptions
+  TextlintPluginOptions,
 } from "@textlint/types";
-import { TxtParentNode } from "@textlint/ast-node-types";
 import { parse } from "./latex-to-ast";
 
 export class LaTeXProcessor implements TextlintPluginProcessor {
   private config: TextlintPluginOptions;
+
   public constructor(config = {}) {
     this.config = config;
   }
+
   public availableExtensions(): string[] {
     return [".tex", ".cls"].concat(this.config.extensions || []);
   }
-  public processor() {
+
+  public processor(): ReturnType<TextlintPluginProcessor["processor"]> {
     return {
-      preProcess(text: string): TxtParentNode {
+      preProcess(text: string) {
         return parse(text);
       },
       postProcess(messages: any[], filePath?: string) {
         return {
           messages,
-          filePath: filePath ? filePath : "<latex>"
+          filePath: filePath ? filePath : "<latex>",
         };
-      }
+      },
     };
   }
 }
