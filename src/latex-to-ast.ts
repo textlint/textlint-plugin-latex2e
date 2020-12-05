@@ -283,10 +283,7 @@ const transform = (text: string) => (
           },
           range: [node.location.start.offset, node.location.end.offset],
           raw: text.slice(node.location.start.offset, node.location.end.offset),
-          value: text.slice(
-            node.content[0].location?.start.offset,
-            node.content[node.content.length - 1].location?.end.offset
-          ),
+          value: text.slice(node.location.start.offset, node.location.end.offset),
           type: ASTNodeTypes.CodeBlock,
         },
       ];
@@ -327,10 +324,7 @@ const transform = (text: string) => (
           },
           range: [node.location.start.offset, node.location.end.offset],
           raw: text.slice(node.location.start.offset, node.location.end.offset),
-          value: text.slice(
-            node.content[0].location?.start.offset,
-            node.content[node.content.length - 1].location?.end.offset
-          ),
+          value: text.slice(node.location.start.offset, node.location.end.offset),
           type: ASTNodeTypes.Code,
         },
       ];

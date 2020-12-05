@@ -18,6 +18,9 @@ import calculatePosition from "./calculatePosition";
 
 const completeBlank = (text: string) => <T extends TxtNode>(node: T): T => {
   if ("children" in node) {
+    if (node.children.length === 0) {
+        return node
+    }
     const children = [];
     for (let i = 0; i < node.children.length - 1; i++) {
       const range = [node.children[i].range[1], node.children[i + 1].range[0]];
