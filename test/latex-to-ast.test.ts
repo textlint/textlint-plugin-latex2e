@@ -47,12 +47,17 @@ describe("TxtNode AST", () => {
     const code = `\\begin{equation}
           x^2 - 6x + 1 = 0
         \\end{equation}
+        \\[
+            x^2 -6x + 1 = 0
+        \\]
         `;
     ASTTester.test(parse(code));
   });
   test("Parse inline math", () => {
     const code = `\\begin{document}
           $x^2 = 4$
+          \\( x^2 = 4 \\)
+          \\begin{math} x^2 = 4 \\end{math}
         \\end{document}
         `;
     ASTTester.test(parse(code));
