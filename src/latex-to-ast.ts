@@ -395,6 +395,8 @@ const transform = (text: string) => (
     case "command.def":
     case "commandParameter":
       return [];
+    default:
+      return [];
   }
 };
 
