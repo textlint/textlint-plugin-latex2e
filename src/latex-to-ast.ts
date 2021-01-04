@@ -367,9 +367,9 @@ const transform = (text: string) => (
         },
       ];
     case "arg.group":
-      return node.content.map(transform(text)).reduce((a, b) => [...a, ...b]);
+      return node.content.map(transform(text)).reduce((a, b) => [...a, ...b], []);
     case "arg.optional":
-      return node.content.map(transform(text)).reduce((a, b) => [...a, ...b]);
+      return node.content.map(transform(text)).reduce((a, b) => [...a, ...b], []);
     case "parbreak":
       return [
         {
