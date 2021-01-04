@@ -18,7 +18,11 @@ And add to `.textlintrc`
 
 ## Copyright
 
-Copyright (C) 2018-2020 TANIGUCHI Masaya ALL Rights Reserved.
+Copyright (C) 2018-2020 Textlint Plugin LaTeX2e Maintainers ALL Rights Reserved.
+
+## Maintainers
+
+- TANIGUCHI Masaya ([@tani](https://github.com/tani))
 
 ## License
 
