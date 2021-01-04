@@ -62,6 +62,23 @@ describe("TxtNode AST", () => {
         `;
     ASTTester.test(parse(code));
   });
+  test("Parse elements of itemize, enumerate, description as ListItem", () => {
+    const code = `\\begin{document}
+    \\begin{itemize}
+      \\item item1
+      \\item item2
+      \\begin{enumerate}
+        \\item item3
+      \\end{enumerate}
+    \\end{itemize}
+    \\end{document}`;
+    const parsedAst = parse(code);
+    ASTTester.test(parsedAst);
+    expect(parsedAst.children[0].children[0].type).toBe("ListItem");
+    expect(parsedAst.children[0].children[2].type).toBe("ListItem");
+    expect(parsedAst.children[0].children[4].type).toBe("ListItem");
+    expect(parsedAst.children[0].children[4].children[0].type).toBe("ListItem");
+  });
   test("Paragraph should not be nested", () => {
     const code = `\\documentclass{article}
       \\begin{document}

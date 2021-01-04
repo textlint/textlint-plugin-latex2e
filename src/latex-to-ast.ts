@@ -240,6 +240,12 @@ const transform = (text: string) => (
       ];
     case "env":
       switch (node.name) {
+        case "itemize":
+        case "enumerate":
+        case "description":
+          return [...node.args, ...node.content]
+            .map(transformListItems(text))
+            .reduce((a, b) => [...a, ...b], []);
         default:
           return [...node.args, ...node.content]
             .map(transform(text))
@@ -399,6 +405,32 @@ const transform = (text: string) => (
       return [];
   }
 };
+
+const transformListItems = (text: string) => (
+  node: latexParser.Node
+): (TxtTextNode | TxtNode)[] => {
+  if(node.kind === "command" && node.name === "item" || node.kind === "math.character") {
+    return [];
+  }
+  return [
+    {
+      loc: {
+        start: {
+          line: node.location.start.line,
+          column: node.location.start.column - 1,
+        },
+        end: {
+          line: node.location.end.line,
+          column: node.location.end.column - 1,
+        },
+      },
+      range: [node.location.start.offset, node.location.end.offset],
+      raw: text.slice(node.location.start.offset, node.location.end.offset),
+      type: ASTNodeTypes.ListItem,
+      children: transform(text)(node),
+    },
+  ];
+}
 
 export const parse = (text: string): TxtParentNode => {
   const parserOpt = {
