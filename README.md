@@ -23,6 +23,8 @@ Copyright (C) 2018-2020 Textlint Plugin LaTeX2e Maintainers ALL Rights Reserved.
 ## Maintainers
 
 - TANIGUCHI Masaya ([@tani](https://github.com/tani))
+- Shoma Kokuryo ([@pddg](https://github.com/pddg))
+- K Ito([@kn1cht](https://github.com/kn1cht))
 
 ## License
 
