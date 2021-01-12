@@ -153,6 +153,17 @@ describe("TxtNode AST", () => {
     expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Comment);
     expect(actual.children[0].children[4].type).toBe(ASTNodeTypes.Comment);
   });
+  test("issue52", () => {
+    const code = `A%B
+C`;
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Str);
+    expect(actual.children[0].children[1].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Str);
+  });
 });
 
 describe("Fixing document", () => {
