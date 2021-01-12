@@ -3,8 +3,7 @@ import "jest";
 import {
   ASTNodeTypes,
   TxtNodeLineLocation,
-  TextNodeRange,
-  TxtParentNode
+  TextNodeRange
 } from "@textlint/ast-node-types";
 import { latexParser } from "latex-utensils";
 import {
@@ -91,65 +90,65 @@ describe("Whether the comment is appeared before the node", () => {
     //
     // \begin{document}
     // \end{document}
-    const commentLoc = makeLocation(1, 0, 2, 0);
-    const nodeLoc = makeLocation(3, 0, 4, 14);
-    expect(isAppearedBeforeNode(nodeLoc, commentLoc)).toBeTruthy();
-    expect(isIncludedByNode(nodeLoc, commentLoc)).toBeFalsy();
+    const commentRange = makeRange(0, 10);
+    const nodeRange = makeRange(11, 42);
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeTruthy();
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();
   });
-  test("just before the node", async () => {
+  test("just before the node", async () => {	
     // % comment
-    // \begin{document}
-    // \end{document}
-    const commentLoc = makeLocation(1, 0, 2, 0);
-    const nodeLoc = makeLocation(2, 0, 3, 14);
-    expect(isAppearedBeforeNode(nodeLoc, commentLoc)).toBeTruthy();
-    expect(isIncludedByNode(nodeLoc, commentLoc)).toBeFalsy();
+    // \begin{ document }	
+    // \end{document}	
+    const commentRange = makeRange(0, 10);	
+    const nodeRange = makeRange(10, 41);	
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeTruthy();	
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();	
   });
   test("the comment after the node", async () => {
     // \begin{document}
     // \end{document}
     //
     // % comment
-    const commentLoc = makeLocation(4, 0, 5, 0);
-    const nodeLoc = makeLocation(1, 0, 2, 14);
-    expect(isAppearedBeforeNode(nodeLoc, commentLoc)).toBeFalsy();
-    expect(isIncludedByNode(nodeLoc, commentLoc)).toBeFalsy();
+    const commentRange = makeRange(33, 43);
+    const nodeRange = makeRange(0, 31);
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();
   });
   test("just after the node", async () => {
-    // \begin{document}
-    // \end{document}% comment
-    const commentLoc = makeLocation(2, 14, 3, 0);
-    const nodeLoc = makeLocation(1, 0, 2, 14);
-    expect(isAppearedBeforeNode(nodeLoc, commentLoc)).toBeFalsy();
-    expect(isIncludedByNode(nodeLoc, commentLoc)).toBeFalsy();
-  });
-  test("the comment included by the node (with line break)", async () => {
-    // \begin{document}
-    //
-    // % comment
-    //
-    // \end{document}
-    const commentLoc = makeLocation(3, 0, 4, 0);
-    const nodeLoc = makeLocation(1, 0, 5, 14);
-    expect(isAppearedBeforeNode(nodeLoc, commentLoc)).toBeFalsy();
-    expect(isIncludedByNode(nodeLoc, commentLoc)).toBeTruthy();
-  });
-  test("the comment included by the node (on the same line)", async () => {
-    // \begin{document}% comment
-    // \end{document}
-    const commentLoc = makeLocation(1, 0, 2, 0);
-    const nodeLoc = makeLocation(1, 0, 2, 14);
-    expect(isAppearedBeforeNode(nodeLoc, commentLoc)).toBeFalsy();
-    expect(isIncludedByNode(nodeLoc, commentLoc)).toBeTruthy();
+    // \begin{document}	
+    // \end{document}% comment	
+    const commentRange = makeRange(31, 41);	
+    const nodeRange = makeRange(0, 31);	
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();	
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();	
   });
   test("the comment included by the node", async () => {
     // \begin{document}
+    //
     // % comment
+    //
     // \end{document}
-    const commentLoc = makeLocation(2, 0, 3, 0);
-    const nodeLoc = makeLocation(1, 0, 3, 14);
-    expect(isAppearedBeforeNode(nodeLoc, commentLoc)).toBeFalsy();
-    expect(isIncludedByNode(nodeLoc, commentLoc)).toBeTruthy();
+    const commentRange = makeRange(18, 28);
+    const nodeRange = makeRange(0, 43);
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeTruthy();
+  });
+  test("the comment included by the node (on the same line)", async () => {	
+    // \begin{document}% comment	
+    // \end{document}	
+    const commentRange = makeRange(16, 26);	
+    const nodeRange = makeRange(0, 40);	
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();	
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeTruthy();
+  });
+  test("the comment included by the node", async () => {
+    // \begin{document}	
+    // % comment	
+    // \end{document}	
+    const commentRange = makeRange(17, 27);
+    const nodeRange = makeRange(0, 41);
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeTruthy();
   });
 });
 
@@ -347,6 +346,42 @@ describe("Test insertComment", () => {
     };
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.push(comment);
+
+    const actual = insertComment(comment, nodes);
+    expect(actual).toMatchObject(expected);
+    for (const node of actual) {
+      ASTTester.test(node);
+    }
+  });
+  test("comment after text without any white space", async () => {
+    // https://github.com/textlint/textlint-plugin-latex2e/issues/52
+    // A%B
+    // C
+    const comment = {
+      type: ASTNodeTypes.Comment,
+      range: makeRange(1, 4),
+      loc: makeLocation(1, 2, 2, 1),
+      raw: "%B\n",
+      value: "B"
+    };
+    const nodes = [
+      {
+        type: ASTNodeTypes.Str,
+        range: makeRange(0, 1),
+        loc: makeLocation(1, 1, 2, 2),
+        raw: "A",
+        value: "A",
+      },
+      {
+        type: ASTNodeTypes.Str,
+        range: makeRange(4, 5),
+        loc: makeLocation(2, 1, 2, 2),
+        raw: "C",
+        value: "C",
+      },
+    ];
+    const expected = JSON.parse(JSON.stringify(nodes));
+    expected.splice(1, 0, comment);
 
     const actual = insertComment(comment, nodes);
     expect(actual).toMatchObject(expected);

@@ -20,7 +20,7 @@ import {
   AnyTxtNode,
   TxtNode,
   TxtParentNode,
-  TxtNodeLineLocation,
+  TextNodeRange,
 } from "@textlint/ast-node-types";
 
 export const convertCommentToTxtNode = (
@@ -56,35 +56,17 @@ export const convertCommentToTxtNode = (
 };
 
 export const isAppearedBeforeNode = (
-  nodeLocation: TxtNodeLineLocation,
-  commentLocation: TxtNodeLineLocation
+  nodeRange: TextNodeRange,
+  commentRange: TextNodeRange
 ): boolean => {
-  if (nodeLocation.start.line >= commentLocation.end.line) {
-    // \begin{document} % comment
-    // \end{document}
-    if (nodeLocation.start.line === commentLocation.end.line) {
-      return nodeLocation.start.column >= commentLocation.end.column;
-    }
-    return true;
-  }
-  return false;
+  return nodeRange[0] >= commentRange[1]; 
 };
 
 export const isIncludedByNode = (
-  nodeLocation: TxtNodeLineLocation,
-  commentLocation: TxtNodeLineLocation
+  nodeRange: TextNodeRange,
+  commentRange: TextNodeRange
 ): boolean => {
-  if (
-    nodeLocation.start.line <= commentLocation.start.line &&
-    nodeLocation.end.line >= commentLocation.end.line
-  ) {
-    // \begin{document}\end{document} % comment
-    if (nodeLocation.end.line === commentLocation.end.line) {
-      return nodeLocation.end.column > commentLocation.start.column;
-    }
-    return true;
-  }
-  return false;
+  return nodeRange[0] <= commentRange[0] && nodeRange[1] >= commentRange[1]
 };
 
 export const isParentNode = (node: any): node is TxtParentNode => {
@@ -105,12 +87,12 @@ export const insertComment = (
   }
   for (let i = 0; i < nodes.length; i++) {
     // If the comment is appeared before the node, insert it before the node.
-    if (isAppearedBeforeNode(nodes[i].loc, comment.loc)) {
+    if (isAppearedBeforeNode(nodes[i].range, comment.range)) {
       nodes.splice(i, 0, comment);
       return nodes;
     }
     // If the comment is included in the node, try to insert it recursively.
-    if (isIncludedByNode(nodes[i].loc, comment.loc)) {
+    if (isIncludedByNode(nodes[i].range, comment.range)) {
       if (isParentNode(nodes[i])) {
         nodes[i].children = insertComment(comment, nodes[i].children);
         return nodes;
