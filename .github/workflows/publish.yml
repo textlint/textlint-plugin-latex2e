@@ -13,6 +13,8 @@ jobs:
         steps:
             - name: Checkout source
               uses: actions/checkout@v2
+              with:
+                fetch-depth: -1
             - name: Use Node.js "14.x"
               uses: actions/setup-node@v1
               with:
@@ -26,10 +28,23 @@ jobs:
               run: $(npm bin)/can-npm-publish
               continue-on-error: true
             - name: Publish
+              id: npm_publish
               if: steps.check_availability.outcome == "success"
               uses: JS-DevTools/npm-publish@v1
               with:
                   token: ${{ secrets.NPM_TOKEN }}
+            - name: Tagging
+              if: steps.npm_publish.conclusion == "success"
+              run: |
+                TAG=v$(jq -r ".version" package.json)
+                if git show-ref --tags | grep -q "refs/tags/${TAG}"
+                then
+                  echo "${TAG} exists. Skipped."
+                  exit
+                else
+                  git tag ${TAG}
+                  git push origin --tags
+                fi
             - name: Post comment
               uses: mshick/add-pr-comment@v1
               if: steps.check_availability.outcome == "success"
