@@ -41,19 +41,19 @@ jobs:
               continue-on-error: true
             - name: Publish
               id: npm_publish
-              if: steps.check_availability.outcome == "success" && steps.check_tag.outcome == "success"
+              if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
               uses: JS-DevTools/npm-publish@v1
               with:
                   token: ${{ secrets.NPM_TOKEN }}
             - name: Tagging
-              if: steps.npm_publish.conclusion == "success"
+              if: steps.npm_publish.conclusion == 'success'
               run: |
                 TAG=v$(jq -r ".version" package.json)
                 git tag ${TAG}
                 git push origin --tags
             - name: Post comment
               uses: mshick/add-pr-comment@v1
-              if: steps.check_availability.outcome == "success" && steps.check_tag.outcome == "success"
+              if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
               with:
                   message: |
                       Thank you for your contributions!
@@ -64,7 +64,7 @@ jobs:
                   allow-repeats: false
             - name: Post comment
               uses: mshick/add-pr-comment@v1
-              if: steps.check_availability.outcome == "failure" || steps.check_tag.outcome == "failure"
+              if: steps.check_availability.outcome == 'failure' || steps.check_tag.outcome == 'failure'
               with:
                   message: |
                       Thank you for your contributions!
