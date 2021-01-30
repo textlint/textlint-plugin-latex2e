@@ -176,6 +176,30 @@ C`;
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.CodeBlock);
     expect(actual.children[0].children[0].children).toBe(undefined);
   });
+  test("url command", () => {
+    const code = `\\url{http://example.com/}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
+    expect(actual.children[0].children[0].url).toBe("http://example.com/");
+    expect(actual.children[0].children[0].children[0].value).toBe("http://example.com/");
+  })
+  test("href command", () => {
+    const code = `\\href{http://example.com/}{link}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
+    expect(actual.children[0].children[0].url).toBe("http://example.com/");
+    expect(actual.children[0].children[0].children[0].value).toBe("link");
+  })
+  test("label command", () => {
+    const code = `\\ref{label}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].children[0].value).toBe("label");
+    expect(actual.children[0].children[0].raw).toBe(code);
+  })
 });
 
 describe("Fixing document", () => {
