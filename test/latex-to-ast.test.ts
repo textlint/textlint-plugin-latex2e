@@ -184,6 +184,14 @@ C`;
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
     expect(actual.children[0].children[0].children[0].value).toBe("http://example.com/");
   })
+  test("href command", () => {
+    const code = `\\href{http://example.com/}{link}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
+    expect(actual.children[0].children[0].url).toBe("http://example.com/");
+    expect(actual.children[0].children[0].children[0].value).toBe("link");
+  })
 });
 
 describe("Fixing document", () => {

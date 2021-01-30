@@ -429,6 +429,28 @@ const transform = (text: string) => (
           }],
         },
       ];
+    case "command.href":
+      return [
+        {
+          loc: {
+            start: {
+              line: node.location.start.line,
+              column: node.location.start.column - 1,
+            },
+            end: {
+              line: node.location.end.line,
+              column: node.location.end.column - 1,
+            },
+          },
+          range: [node.location.start.offset, node.location.end.offset],
+          raw: text.slice(node.location.start.offset, node.location.end.offset),
+          url: node.url,
+          type: ASTNodeTypes.Link,
+          children: node.content
+            .map(transform(text))
+            .reduce((a, b) => [...a, ...b], []),
+        },
+      ];
     case "ignore":
     case "alignmentTab":
     case "activeCharacter":
