@@ -16,6 +16,11 @@ And add to `.textlintrc`
    plugins: ["latex2e"]
 ```
 
+## Limitations
+
+- Comments in `equation` environment are not parsed as AST of textlint.
+  - A rule or a formatter using comments like textlint-filter-rule-comments cannot use them.
+
 ## Copyright
 
 Copyright (C) 2018-2020 Textlint Plugin LaTeX2e Maintainers ALL Rights Reserved.
