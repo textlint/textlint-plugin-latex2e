@@ -164,6 +164,18 @@ C`;
     expect(actual.children[0].children[1].type).toBe(ASTNodeTypes.Comment);
     expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Str);
   });
+  test("comments in a equation environment are ignored", () => {
+    const code = `\\begin{equation}
+    % comment
+    x = x^{2} % comment
+\\end{equation}`;
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[0].children[0].children).toBe(undefined);
+  });
 });
 
 describe("Fixing document", () => {
@@ -259,6 +271,18 @@ describe("Fixing document", () => {
           I have a pen.
         \\end{document}
         % comment`;
+    const result = await kernel.fixText(input, { ...options, ext: ".tex" });
+    expect(result.output).toBe(output);
+  });
+  test("comments in a equation environment", async () => {
+    const input = `\\begin{equation}
+% Comment
+x^x % comment
+\\end{equation}`;
+    const output = `\\begin{equation}
+% Comment
+x^x % comment
+\\end{equation}`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });

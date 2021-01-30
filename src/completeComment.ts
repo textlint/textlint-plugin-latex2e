@@ -97,11 +97,19 @@ export const insertComment = (
         nodes[i].children = insertComment(comment, nodes[i].children);
         return nodes;
       }
-      // `Parbreak` has no children, even though the range of
-      // `Parbreak` includes the range of comment
-      // if comment is surrounding by the line break.
-      // But the parbreak becomes null, so this condition does not used.
-      throw Error("Unexpected node is given. Is the syntax correct?");
+      switch (nodes[i].type) {
+        case ASTNodeTypes.Code:
+        case ASTNodeTypes.CodeBlock:
+          // Ignore comments in CodeBlock.
+          // This behavior is as same as the reference plugin(Markdown).
+          return nodes
+        default:
+          // `Parbreak` has no children, even though the range of
+          // `Parbreak` includes the range of comment
+          // if comment is surrounding by the line break.
+          // But the parbreak becomes null, so this condition does not used.
+          throw Error("Unexpected node is given. Is the syntax correct?");
+      }
     }
   }
   // If the comment is not inserted, it would be appeared after all nodes.
