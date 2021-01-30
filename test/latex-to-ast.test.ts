@@ -192,6 +192,14 @@ C`;
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
     expect(actual.children[0].children[0].children[0].value).toBe("link");
   })
+  test("label command", () => {
+    const code = `\\ref{label}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].children[0].value).toBe("label");
+    expect(actual.children[0].children[0].raw).toBe(code);
+  })
 });
 
 describe("Fixing document", () => {

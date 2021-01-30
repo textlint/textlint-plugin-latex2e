@@ -451,6 +451,25 @@ const transform = (text: string) => (
             .reduce((a, b) => [...a, ...b], []),
         },
       ];
+    case "command.label":
+      return [
+        {
+          loc: {
+            start: {
+              line: node.location.start.line,
+              column: node.location.start.column - 1,
+            },
+            end: {
+              line: node.location.end.line,
+              column: node.location.end.column - 1,
+            },
+          },
+          range: [node.location.start.offset, node.location.end.offset],
+          raw: text.slice(node.location.start.offset, node.location.end.offset),
+          value: node.label,
+          type: ASTNodeTypes.Html,
+        },
+      ];
     case "ignore":
     case "alignmentTab":
     case "activeCharacter":
