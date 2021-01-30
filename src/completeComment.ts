@@ -59,17 +59,17 @@ export const isAppearedBeforeNode = (
   nodeRange: TextNodeRange,
   commentRange: TextNodeRange
 ): boolean => {
-  return nodeRange[0] >= commentRange[1]; 
+  return nodeRange[0] >= commentRange[1];
 };
 
 export const isIncludedByNode = (
   nodeRange: TextNodeRange,
   commentRange: TextNodeRange
 ): boolean => {
-  return nodeRange[0] <= commentRange[0] && nodeRange[1] >= commentRange[1]
+  return nodeRange[0] <= commentRange[0] && nodeRange[1] >= commentRange[1];
 };
 
-export const isParentNode = (node: any): node is TxtParentNode => {
+export const isParentNode = (node: TxtNode): node is TxtParentNode => {
   const children = node.children;
   return (
     typeof node === "object" &&
@@ -102,7 +102,7 @@ export const insertComment = (
         case ASTNodeTypes.CodeBlock:
           // Ignore comments in CodeBlock.
           // This behavior is as same as the reference plugin(Markdown).
-          return nodes
+          return nodes;
         default:
           // `Parbreak` has no children, even though the range of
           // `Parbreak` includes the range of comment
@@ -120,7 +120,7 @@ export const insertComment = (
 // Mapping all comments to the given AST.
 export const completeComments = (comments: latexParser.Comment[]) => (
   rawText: string
-) => (root: TxtParentNode): any => {
+) => (root: TxtParentNode): TxtParentNode => {
   if (comments.length === 0) {
     return root;
   }

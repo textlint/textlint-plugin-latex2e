@@ -3,7 +3,7 @@ import "jest";
 import {
   ASTNodeTypes,
   TxtNodeLineLocation,
-  TextNodeRange
+  TextNodeRange,
 } from "@textlint/ast-node-types";
 import { latexParser } from "latex-utensils";
 import {
@@ -12,7 +12,7 @@ import {
   isIncludedByNode,
   isParentNode,
   insertComment,
-  completeComments
+  completeComments,
 } from "../src/completeComment";
 
 const makeLocation = (
@@ -24,12 +24,12 @@ const makeLocation = (
   return {
     start: {
       line: startLine,
-      column: startColumn
+      column: startColumn,
     },
     end: {
       line: endLine,
-      column: endColumn
-    }
+      column: endColumn,
+    },
   };
 };
 
@@ -48,15 +48,15 @@ describe("Conversion of latexParser.Comment", () => {
           start: {
             offset: 17,
             line: 2,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 27,
             line: 3,
-            column: 1
-          }
-        }
-      }
+            column: 1,
+          },
+        },
+      },
     ];
     const expected = [
       {
@@ -64,8 +64,8 @@ describe("Conversion of latexParser.Comment", () => {
         loc: makeLocation(2, 0, 3, 0),
         range: makeRange(17, 27),
         raw: "% comment\n",
-        value: " comment"
-      }
+        value: " comment",
+      },
     ];
     const actual = convertCommentToTxtNode(
       rawText,
@@ -95,14 +95,14 @@ describe("Whether the comment is appeared before the node", () => {
     expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeTruthy();
     expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();
   });
-  test("just before the node", async () => {	
+  test("just before the node", async () => {
     // % comment
-    // \begin{ document }	
-    // \end{document}	
-    const commentRange = makeRange(0, 10);	
-    const nodeRange = makeRange(10, 41);	
-    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeTruthy();	
-    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();	
+    // \begin{ document }
+    // \end{document}
+    const commentRange = makeRange(0, 10);
+    const nodeRange = makeRange(10, 41);
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeTruthy();
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();
   });
   test("the comment after the node", async () => {
     // \begin{document}
@@ -115,12 +115,12 @@ describe("Whether the comment is appeared before the node", () => {
     expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();
   });
   test("just after the node", async () => {
-    // \begin{document}	
-    // \end{document}% comment	
-    const commentRange = makeRange(31, 41);	
-    const nodeRange = makeRange(0, 31);	
-    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();	
-    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();	
+    // \begin{document}
+    // \end{document}% comment
+    const commentRange = makeRange(31, 41);
+    const nodeRange = makeRange(0, 31);
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();
+    expect(isIncludedByNode(nodeRange, commentRange)).toBeFalsy();
   });
   test("the comment included by the node", async () => {
     // \begin{document}
@@ -133,18 +133,18 @@ describe("Whether the comment is appeared before the node", () => {
     expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();
     expect(isIncludedByNode(nodeRange, commentRange)).toBeTruthy();
   });
-  test("the comment included by the node (on the same line)", async () => {	
-    // \begin{document}% comment	
-    // \end{document}	
-    const commentRange = makeRange(16, 26);	
-    const nodeRange = makeRange(0, 40);	
-    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();	
+  test("the comment included by the node (on the same line)", async () => {
+    // \begin{document}% comment
+    // \end{document}
+    const commentRange = makeRange(16, 26);
+    const nodeRange = makeRange(0, 40);
+    expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();
     expect(isIncludedByNode(nodeRange, commentRange)).toBeTruthy();
   });
   test("the comment included by the node", async () => {
-    // \begin{document}	
-    // % comment	
-    // \end{document}	
+    // \begin{document}
+    // % comment
+    // \end{document}
     const commentRange = makeRange(17, 27);
     const nodeRange = makeRange(0, 41);
     expect(isAppearedBeforeNode(nodeRange, commentRange)).toBeFalsy();
@@ -159,7 +159,7 @@ describe("Test isParentNode", () => {
       raw: "",
       range: [0, 1] as TextNodeRange,
       loc: makeLocation(0, 0, 0, 0),
-      children: []
+      children: [],
     };
     expect(isParentNode(node)).toBeTruthy();
   });
@@ -169,7 +169,7 @@ describe("Test isParentNode", () => {
       raw: "",
       range: [0, 1] as TextNodeRange,
       loc: makeLocation(0, 0, 0, 0),
-      children: null
+      children: null,
     };
     expect(isParentNode(node)).toBeFalsy();
   });
@@ -179,7 +179,7 @@ describe("Test isParentNode", () => {
       raw: "",
       range: [0, 1] as TextNodeRange,
       loc: makeLocation(0, 0, 0, 0),
-      value: ""
+      value: "",
     };
     expect(isParentNode(node)).toBeFalsy();
   });
@@ -204,24 +204,24 @@ describe("Test insertComment", () => {
             range: makeRange(17, 21),
             loc: makeLocation(2, 0, 2, 4),
             raw: "abcd",
-            value: "abcd"
+            value: "abcd",
           },
           {
             type: ASTNodeTypes.Str,
             range: makeRange(33, 37),
             loc: makeLocation(4, 0, 4, 4),
             raw: "efgh",
-            value: "efgh"
-          }
-        ]
-      }
+            value: "efgh",
+          },
+        ],
+      },
     ];
     const comment = {
       type: ASTNodeTypes.Comment,
       range: makeRange(22, 23),
       loc: makeLocation(3, 0, 4, 0),
       raw: "% comment\n",
-      value: " comment"
+      value: " comment",
     };
     const expected = JSON.parse(JSON.stringify(nodes));
     expected[0].children.splice(1, 0, comment);
@@ -263,28 +263,28 @@ describe("Test insertComment", () => {
                     range: makeRange(51, 56),
                     loc: makeLocation(3, 18, 3, 23),
                     raw: "",
-                    value: "item1"
-                  }
-                ]
-              }
-            ]
+                    value: "item1",
+                  },
+                ],
+              },
+            ],
           },
           {
             type: ASTNodeTypes.Str,
             range: makeRange(78, 83),
             loc: makeLocation(4, 10, 4, 15),
             raw: "",
-            value: "items"
-          }
-        ]
-      }
+            value: "items",
+          },
+        ],
+      },
     ];
     const comment = {
       type: ASTNodeTypes.Comment,
       range: makeRange(58, 68),
       loc: makeLocation(3, 25, 4, 0),
       raw: "% comment\n",
-      value: " comment"
+      value: " comment",
     };
     const expected = JSON.parse(JSON.stringify(nodes));
     expected[0].children[0].children.push(comment);
@@ -305,15 +305,15 @@ describe("Test insertComment", () => {
         range: makeRange(10, 41),
         loc: makeLocation(2, 0, 3, 14),
         raw: "",
-        children: []
-      }
+        children: [],
+      },
     ];
     const comment = {
       type: ASTNodeTypes.Comment,
       range: makeRange(0, 10),
       loc: makeLocation(1, 0, 2, 0),
       raw: "% comment\n",
-      value: " comment"
+      value: " comment",
     };
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.splice(0, 0, comment);
@@ -334,15 +334,15 @@ describe("Test insertComment", () => {
         range: makeRange(0, 31),
         loc: makeLocation(1, 0, 2, 14),
         raw: "",
-        children: []
-      }
+        children: [],
+      },
     ];
     const comment = {
       type: ASTNodeTypes.Comment,
       range: makeRange(32, 42),
       loc: makeLocation(3, 0, 4, 0),
       raw: "% comment\n",
-      value: " comment"
+      value: " comment",
     };
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.push(comment);
@@ -362,7 +362,7 @@ describe("Test insertComment", () => {
       range: makeRange(1, 4),
       loc: makeLocation(1, 2, 2, 1),
       raw: "%B\n",
-      value: "B"
+      value: "B",
     };
     const nodes = [
       {
@@ -399,7 +399,7 @@ describe("Test completeComment", () => {
       range: makeRange(0, 52),
       loc: makeLocation(1, 0, 3, 14),
       raw: rawText,
-      children: []
+      children: [],
     };
     const comments = [
       {
@@ -409,15 +409,15 @@ describe("Test completeComment", () => {
           start: {
             offset: 17,
             line: 2,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 27,
             line: 3,
-            column: 1
-          }
-        }
-      }
+            column: 1,
+          },
+        },
+      },
     ];
     const expectedComments = [
       {
@@ -425,8 +425,8 @@ describe("Test completeComment", () => {
         range: makeRange(17, 27),
         loc: makeLocation(2, 0, 3, 0),
         raw: "% comment\n",
-        value: " comment"
-      }
+        value: " comment",
+      },
     ];
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.children = [expectedComments[0]];
@@ -442,7 +442,7 @@ describe("Test completeComment", () => {
       range: makeRange(0, 56),
       loc: makeLocation(3, 0, 7, 0),
       raw: rawText,
-      children: []
+      children: [],
     };
     const comments = [
       {
@@ -452,14 +452,14 @@ describe("Test completeComment", () => {
           start: {
             offset: 0,
             line: 1,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 4,
             line: 2,
-            column: 1
-          }
-        }
+            column: 1,
+          },
+        },
       },
       {
         kind: "comment" as const,
@@ -468,14 +468,14 @@ describe("Test completeComment", () => {
           start: {
             offset: 4,
             line: 2,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 8,
             line: 3,
-            column: 1
-          }
-        }
+            column: 1,
+          },
+        },
       },
       {
         kind: "comment" as const,
@@ -484,14 +484,14 @@ describe("Test completeComment", () => {
           start: {
             offset: 25,
             line: 4,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 29,
             line: 5,
-            column: 1
-          }
-        }
+            column: 1,
+          },
+        },
       },
       {
         kind: "comment" as const,
@@ -500,14 +500,14 @@ describe("Test completeComment", () => {
           start: {
             offset: 29,
             line: 5,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 33,
             line: 6,
-            column: 1
-          }
-        }
+            column: 1,
+          },
+        },
       },
       {
         kind: "comment" as const,
@@ -516,14 +516,14 @@ describe("Test completeComment", () => {
           start: {
             offset: 48,
             line: 7,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 52,
             line: 8,
-            column: 1
-          }
-        }
+            column: 1,
+          },
+        },
       },
       {
         kind: "comment" as const,
@@ -532,15 +532,15 @@ describe("Test completeComment", () => {
           start: {
             offset: 52,
             line: 8,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 56,
             line: 9,
-            column: 1
-          }
-        }
-      }
+            column: 1,
+          },
+        },
+      },
     ];
     const expected = JSON.parse(JSON.stringify(nodes));
     expected.children = [
@@ -549,43 +549,43 @@ describe("Test completeComment", () => {
         range: makeRange(0, 4),
         loc: makeLocation(1, 0, 2, 0),
         raw: "% a\n",
-        value: " a"
+        value: " a",
       },
       {
         type: ASTNodeTypes.Comment,
         range: makeRange(4, 8),
         loc: makeLocation(2, 0, 3, 0),
         raw: "% b\n",
-        value: " b"
+        value: " b",
       },
       {
         type: ASTNodeTypes.Comment,
         range: makeRange(25, 29),
         loc: makeLocation(4, 0, 5, 0),
         raw: "% c\n",
-        value: " c"
+        value: " c",
       },
       {
         type: ASTNodeTypes.Comment,
         range: makeRange(29, 33),
         loc: makeLocation(5, 0, 6, 0),
         raw: "% d\n",
-        value: " d"
+        value: " d",
       },
       {
         type: ASTNodeTypes.Comment,
         range: makeRange(48, 52),
         loc: makeLocation(7, 0, 8, 0),
         raw: "% e\n",
-        value: " e"
+        value: " e",
       },
       {
         type: ASTNodeTypes.Comment,
         range: makeRange(52, 56),
         loc: makeLocation(8, 0, 9, 0),
         raw: "% f",
-        value: " f"
-      }
+        value: " f",
+      },
     ];
 
     const actual = completeComments(comments)(rawText)(nodes);
@@ -600,8 +600,8 @@ describe("Test completeComment", () => {
         range: makeRange(21, 25),
         loc: makeLocation(3, 0, 5, 0),
         raw: "% b\n",
-        value: "% b"
-      }
+        value: "% b",
+      },
     ];
     const nodes = {
       type: ASTNodeTypes.Document,
@@ -615,9 +615,9 @@ describe("Test completeComment", () => {
           range: makeRange(21, 25),
           loc: makeLocation(3, 0, 5, 0),
           raw: "% b\n",
-          value: "% b"
-        }
-      ]
+          value: "% b",
+        },
+      ],
     };
     const comments = [
       {
@@ -627,14 +627,14 @@ describe("Test completeComment", () => {
           start: {
             offset: 0,
             line: 1,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 4,
             line: 2,
-            column: 1
-          }
-        }
+            column: 1,
+          },
+        },
       },
       {
         kind: "comment" as const,
@@ -643,15 +643,15 @@ describe("Test completeComment", () => {
           start: {
             offset: 21,
             line: 3,
-            column: 1
+            column: 1,
           },
           end: {
             offset: 25,
             line: 4,
-            column: 1
-          }
-        }
-      }
+            column: 1,
+          },
+        },
+      },
     ];
     expect(() => {
       completeComments(comments)(rawText)(nodes);
