@@ -394,6 +394,41 @@ const transform = (text: string) => (
           type: "parbreak",
         },
       ];
+    case "command.url":
+      return [
+        {
+          loc: {
+            start: {
+              line: node.location.start.line,
+              column: node.location.start.column - 1,
+            },
+            end: {
+              line: node.location.end.line,
+              column: node.location.end.column - 1,
+            },
+          },
+          range: [node.location.start.offset, node.location.end.offset],
+          raw: text.slice(node.location.start.offset, node.location.end.offset),
+          url: node.url,
+          type: ASTNodeTypes.Link,
+          children: [{
+            loc: {
+              start: {
+                line: node.location.start.line,
+                column: node.location.start.column - 1,
+              },
+              end: {
+                line: node.location.end.line,
+                column: node.location.end.column - 1,
+              },
+            },
+            range: [node.location.start.offset, node.location.end.offset],
+            raw: text.slice(node.location.start.offset, node.location.end.offset),
+            value: node.url,
+            type: ASTNodeTypes.Str,
+          }],
+        },
+      ];
     case "ignore":
     case "alignmentTab":
     case "activeCharacter":
