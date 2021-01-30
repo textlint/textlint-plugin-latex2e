@@ -1,15 +1,11 @@
 {
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "prettier",
-        "prettier/@typescript-eslint"
+        "plugin:@typescript-eslint/recommended"
     ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
     "parserOptions": {
         "project": "./tsconfig.json"
-    },
-    "rules": {
-        "@typescript-eslint/no-explicit-any": 0,
-        "@typescript-eslint/explicit-module-boundary-types": 0
     }
 }
