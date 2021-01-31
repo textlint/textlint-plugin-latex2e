@@ -4,6 +4,12 @@ import { parse } from "../src/latex-to-ast";
 import { TextlintKernel } from "@textlint/kernel";
 import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
 
+import textlintRuleGinger from "textlint-rule-ginger";
+import textlintRuleSpellCheckTechWord from "textlint-rule-spellcheck-tech-word";
+
+import LaTeXProcessor from "../src";
+import MarkdownProcessor from "@textlint/textlint-plugin-markdown";
+
 describe("TxtNode AST", () => {
   test("Issue 42: TypeError is occurred if `Parbreak` node appears before the first appearance of actual sentence", () => {
     const code1 = `
@@ -182,8 +188,10 @@ C`;
     expect(actual.children.length).toBe(1);
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
-    expect(actual.children[0].children[0].children[0].value).toBe("http://example.com/");
-  })
+    expect(actual.children[0].children[0].children[0].value).toBe(
+      "http://example.com/"
+    );
+  });
   test("href command", () => {
     const code = `\\href{http://example.com/}{link}`;
     const actual = parse(code);
@@ -191,7 +199,7 @@ C`;
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
     expect(actual.children[0].children[0].children[0].value).toBe("link");
-  })
+  });
   test("label command", () => {
     const code = `\\ref{label}`;
     const actual = parse(code);
@@ -199,7 +207,7 @@ C`;
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Html);
     expect(actual.children[0].children[0].value).toBe("label");
     expect(actual.children[0].children[0].raw).toBe(code);
-  })
+  });
 });
 
 describe("Fixing document", () => {
@@ -207,22 +215,22 @@ describe("Fixing document", () => {
   const options = {
     filePath: "<test>",
     plugins: [
-      { pluginId: "latex2e", plugin: require("../src").default },
+      { pluginId: "latex2e", plugin: LaTeXProcessor },
       {
         pluginId: "markdown",
-        plugin: require("@textlint/textlint-plugin-markdown").default
-      }
+        plugin: MarkdownProcessor,
+      },
     ],
     rules: [
       {
         ruleId: "spellcheck-tech-word",
-        rule: require("textlint-rule-spellcheck-tech-word")
+        rule: textlintRuleSpellCheckTechWord,
       },
       {
         ruleId: "ginger",
-        rule: require("textlint-rule-ginger").default
-      }
-    ]
+        rule: textlintRuleGinger,
+      },
+    ],
   };
   test("latex code", async () => {
     const input = `
