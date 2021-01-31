@@ -16,17 +16,6 @@
     "prepare": "npm run clean && npm run build",
     "prepublishOnly": "npm test"
   },
-  "lint-staged": {
-    "*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "keywords": [
     "textlint",
     "latex"
