@@ -1,9 +1,12 @@
 {
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
-    "parserOptions": {
+  "extends": ["eslint:recommended"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
         "project": "./tsconfig.json"
+      },
+      "extends": ["plugin:@typescript-eslint/recommended"]
     }
+  ]
 }
