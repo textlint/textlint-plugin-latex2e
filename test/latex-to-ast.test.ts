@@ -154,10 +154,10 @@ describe("TxtNode AST", () => {
         `;
     const actual = parse(code);
     ASTTester.test(actual);
-    expect(actual.children.length).toBe(1);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Comment);
-    expect(actual.children[0].children[4].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children.length).toBe(7);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[4].type).toBe(ASTNodeTypes.Comment);
   });
   test("issue52", () => {
     const code = `A%B
@@ -178,14 +178,14 @@ C`;
     const actual = parse(code);
     ASTTester.test(actual);
     expect(actual.children.length).toBe(1);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.CodeBlock);
-    expect(actual.children[0].children[0].children).toBe(undefined);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[0].children).toBe(undefined);
   });
   test("url command", () => {
     const code = `\\url{http://example.com/}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
     expect(actual.children[0].children[0].children[0].value).toBe(
@@ -196,6 +196,7 @@ C`;
     const code = `\\href{http://example.com/}{link}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
     expect(actual.children[0].children[0].children[0].value).toBe("link");
@@ -204,9 +205,23 @@ C`;
     const code = `\\ref{label}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Html);
-    expect(actual.children[0].children[0].value).toBe("label");
-    expect(actual.children[0].children[0].raw).toBe(code);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].value).toBe("label");
+    expect(actual.children[0].raw).toBe(code);
+  });
+  test("CodeBlock is not to be included in paragraph", () => {
+    const code = `\\section{title}
+hogehoge
+\\begin{equation}
+  x = y
+\\end{equation}
+fugafuga`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(7);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[4].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[6].type).toBe(ASTNodeTypes.Paragraph);
   });
 });
 
