@@ -179,12 +179,12 @@ describe("Fixing document", () => {
     ],
     rules: [
       {
-        ruleId: "spellcheck-tech-word",
-        rule: require("textlint-rule-spellcheck-tech-word")
-      },
-      {
-        ruleId: "ginger",
-        rule: require("textlint-rule-ginger").default
+        ruleId: "spelling",
+        rule: require("textlint-rule-spelling"),
+        options: {
+          language: "en",
+          suggestCorrections: true
+        }
       }
     ]
   };
@@ -192,19 +192,19 @@ describe("Fixing document", () => {
     const input = `
         \\documentclass{article}
         \\begin{document}
-        I has a pens.
+        What colour do you like?
 
         \\hoge
-        I has a pens.
+        What color do you like?
         \\end{document}
         `;
     const output = `
         \\documentclass{article}
         \\begin{document}
-        I have a pen.
+        What color do you like?
 
         \\hoge
-        I have a pen.
+        What color do you like?
         \\end{document}
         `;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
@@ -214,18 +214,18 @@ describe("Fixing document", () => {
   test("latex code one line", async () => {
     const input = `
         \\documentclass{article}
-        \\begin{document}I has a pens.\\end{document}
+        \\begin{document}What colour do you like?\\end{document}
         `;
     const output = `
         \\documentclass{article}
-        \\begin{document}I have a pen.\\end{document}
+        \\begin{document}What color do you like?\\end{document}
         `;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });
   test("latex code outside of document environment", async () => {
-    const input = `I has a pens.`;
-    const output = `I have a pen.`;
+    const input = `What colour do you like?`;
+    const output = `What color do you like?`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });
@@ -234,13 +234,13 @@ describe("Fixing document", () => {
         \\documentclass{article}
         \\begin{document}
           % comment
-          I have a pen.
+          What colour do you like?
         \\end{document}`;
     const output = `
         \\documentclass{article}
         \\begin{document}
           % comment
-          I have a pen.
+          What color do you like?
         \\end{document}`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
@@ -250,13 +250,13 @@ describe("Fixing document", () => {
     const input = `\\documentclass{article}
         % comment
         \\begin{document}
-          I have a pen.
+          What colour do you like?
         \\end{document}
         % comment`;
     const output = `\\documentclass{article}
         % comment
         \\begin{document}
-          I have a pen.
+          What color do you like?
         \\end{document}
         % comment`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
