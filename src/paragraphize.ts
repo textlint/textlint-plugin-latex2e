@@ -29,11 +29,20 @@ export default (rootNode: TxtParentNode): TxtParentNode => {
   };
   let paragraph: AnyTxtNode[] = [];
   for (const node of rootNode.children) {
-    if (node.type === "parbreak") {
-      pushChild(paragraph);
-      paragraph = [];
-    } else {
-      paragraph.push(node);
+    switch (node.type) {
+      case ASTNodeTypes.CodeBlock:
+      case ASTNodeTypes.Header:
+      case ASTNodeTypes.Html:
+        pushChild(paragraph);
+        paragraph = [];
+        children.push(node);
+        break;
+      case "parbreak":
+        pushChild(paragraph);
+        paragraph = [];
+        break;
+      default:
+        paragraph.push(node);
     }
   }
   pushChild(paragraph);

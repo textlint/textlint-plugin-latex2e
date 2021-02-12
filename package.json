@@ -1,15 +1,22 @@
 {
   "name": "textlint-plugin-latex2e",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "A textlint plugin for LaTeX2e",
   "main": "lib/index.js",
   "scripts": {
-    "lint": "eslint src/**/*.ts",
+    "lint": "run-p lint:*",
+    "lint:eslint": "eslint '**/*.{ts,js}'",
+    "lint:prettier": "prettier --check '**/*.{ts,js,json}'",
+    "fix": "run-s fix:prettier fix:eslint",
+    "fix:eslint": "eslint --fix '**/*.{ts,js}'",
+    "fix:prettier": "prettier --write '**/*.{ts,js,json}'",
     "build": "tsc",
     "test": "jest",
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test && pinst --disable",
+    "postinstall": "husky install",
+    "postpublish": "pinst --enable"
   },
   "keywords": [
     "textlint",
@@ -20,7 +27,7 @@
   "dependencies": {
     "@textlint/ast-node-types": "^4.3.4",
     "fp-ts": "^2.8.3",
-    "latex-utensils": "^2.0.3"
+    "latex-utensils": "^3.0.0"
   },
   "devDependencies": {
     "@textlint/ast-tester": "^2.2.4",
@@ -34,7 +41,11 @@
     "dictionary-en": "^3.1.0",
     "eslint": "^7.10.0",
     "eslint-config-prettier": "^6.12.0",
+    "husky": "^5.0.9",
     "jest": "^26.5.0",
+    "lint-staged": "^10.5.3",
+    "npm-run-all": "^4.1.5",
+    "pinst": "^2.1.4",
     "prettier": "^2.1.2",
     "rimraf": "^3.0.2",
     "textlint-rule-ginger": "^2.2.1",

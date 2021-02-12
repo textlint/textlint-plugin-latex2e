@@ -59,17 +59,17 @@ export const isAppearedBeforeNode = (
   nodeRange: TextNodeRange,
   commentRange: TextNodeRange
 ): boolean => {
-  return nodeRange[0] >= commentRange[1]; 
+  return nodeRange[0] >= commentRange[1];
 };
 
 export const isIncludedByNode = (
   nodeRange: TextNodeRange,
   commentRange: TextNodeRange
 ): boolean => {
-  return nodeRange[0] <= commentRange[0] && nodeRange[1] >= commentRange[1]
+  return nodeRange[0] <= commentRange[0] && nodeRange[1] >= commentRange[1];
 };
 
-export const isParentNode = (node: any): node is TxtParentNode => {
+export const isParentNode = (node: TxtNode): node is TxtParentNode => {
   const children = node.children;
   return (
     typeof node === "object" &&
@@ -97,11 +97,19 @@ export const insertComment = (
         nodes[i].children = insertComment(comment, nodes[i].children);
         return nodes;
       }
-      // `Parbreak` has no children, even though the range of
-      // `Parbreak` includes the range of comment
-      // if comment is surrounding by the line break.
-      // But the parbreak becomes null, so this condition does not used.
-      throw Error("Unexpected node is given. Is the syntax correct?");
+      switch (nodes[i].type) {
+        case ASTNodeTypes.Code:
+        case ASTNodeTypes.CodeBlock:
+          // Ignore comments in CodeBlock.
+          // This behavior is as same as the reference plugin(Markdown).
+          return nodes;
+        default:
+          // `Parbreak` has no children, even though the range of
+          // `Parbreak` includes the range of comment
+          // if comment is surrounding by the line break.
+          // But the parbreak becomes null, so this condition does not used.
+          throw Error("Unexpected node is given. Is the syntax correct?");
+      }
     }
   }
   // If the comment is not inserted, it would be appeared after all nodes.
@@ -112,7 +120,7 @@ export const insertComment = (
 // Mapping all comments to the given AST.
 export const completeComments = (comments: latexParser.Comment[]) => (
   rawText: string
-) => (root: TxtParentNode): any => {
+) => (root: TxtParentNode): TxtParentNode => {
   if (comments.length === 0) {
     return root;
   }

@@ -36,6 +36,7 @@ export class LaTeXProcessor implements TextlintPluginProcessor {
       preProcess(text: string) {
         return parse(text);
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       postProcess(messages: any[], filePath?: string) {
         return {
           messages,

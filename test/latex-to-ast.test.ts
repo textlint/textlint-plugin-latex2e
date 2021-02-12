@@ -4,6 +4,12 @@ import { parse } from "../src/latex-to-ast";
 import { TextlintKernel } from "@textlint/kernel";
 import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
 
+import textlintRuleGinger from "textlint-rule-ginger";
+import textlintRuleSpellCheckTechWord from "textlint-rule-spellcheck-tech-word";
+
+import LaTeXProcessor from "../src";
+import MarkdownProcessor from "@textlint/textlint-plugin-markdown";
+
 describe("TxtNode AST", () => {
   test("Issue 42: TypeError is occurred if `Parbreak` node appears before the first appearance of actual sentence", () => {
     const code1 = `
@@ -148,10 +154,10 @@ describe("TxtNode AST", () => {
         `;
     const actual = parse(code);
     ASTTester.test(actual);
-    expect(actual.children.length).toBe(1);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Comment);
-    expect(actual.children[0].children[4].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children.length).toBe(7);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[4].type).toBe(ASTNodeTypes.Comment);
   });
   test("issue52", () => {
     const code = `A%B
@@ -164,6 +170,59 @@ C`;
     expect(actual.children[0].children[1].type).toBe(ASTNodeTypes.Comment);
     expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Str);
   });
+  test("comments in a equation environment are ignored", () => {
+    const code = `\\begin{equation}
+    % comment
+    x = x^{2} % comment
+\\end{equation}`;
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[0].children).toBe(undefined);
+  });
+  test("url command", () => {
+    const code = `\\url{http://example.com/}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
+    expect(actual.children[0].children[0].url).toBe("http://example.com/");
+    expect(actual.children[0].children[0].children[0].value).toBe(
+      "http://example.com/"
+    );
+  });
+  test("href command", () => {
+    const code = `\\href{http://example.com/}{link}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
+    expect(actual.children[0].children[0].url).toBe("http://example.com/");
+    expect(actual.children[0].children[0].children[0].value).toBe("link");
+  });
+  test("label command", () => {
+    const code = `\\ref{label}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].value).toBe("label");
+    expect(actual.children[0].raw).toBe(code);
+  });
+  test("CodeBlock is not to be included in paragraph", () => {
+    const code = `\\section{title}
+hogehoge
+\\begin{equation}
+  x = y
+\\end{equation}
+fugafuga`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(7);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[4].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[6].type).toBe(ASTNodeTypes.Paragraph);
+  });
 });
 
 describe("Fixing document", () => {
@@ -171,11 +230,11 @@ describe("Fixing document", () => {
   const options = {
     filePath: "<test>",
     plugins: [
-      { pluginId: "latex2e", plugin: require("../src").default },
+      { pluginId: "latex2e", plugin: LaTeXProcessor },
       {
         pluginId: "markdown",
-        plugin: require("@textlint/textlint-plugin-markdown").default
-      }
+        plugin: MarkdownProcessor,
+      },
     ],
     rules: [
       {
@@ -259,6 +318,18 @@ describe("Fixing document", () => {
           What color do you like?
         \\end{document}
         % comment`;
+    const result = await kernel.fixText(input, { ...options, ext: ".tex" });
+    expect(result.output).toBe(output);
+  });
+  test("comments in a equation environment", async () => {
+    const input = `\\begin{equation}
+% Comment
+x^x % comment
+\\end{equation}`;
+    const output = `\\begin{equation}
+% Comment
+x^x % comment
+\\end{equation}`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });

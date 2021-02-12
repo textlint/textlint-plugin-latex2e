@@ -289,7 +289,10 @@ const transform = (text: string) => (
           },
           range: [node.location.start.offset, node.location.end.offset],
           raw: text.slice(node.location.start.offset, node.location.end.offset),
-          value: text.slice(node.location.start.offset, node.location.end.offset),
+          value: text.slice(
+            node.location.start.offset,
+            node.location.end.offset
+          ),
           type: ASTNodeTypes.CodeBlock,
         },
       ];
@@ -330,7 +333,10 @@ const transform = (text: string) => (
           },
           range: [node.location.start.offset, node.location.end.offset],
           raw: text.slice(node.location.start.offset, node.location.end.offset),
-          value: text.slice(node.location.start.offset, node.location.end.offset),
+          value: text.slice(
+            node.location.start.offset,
+            node.location.end.offset
+          ),
           type: ASTNodeTypes.Code,
         },
       ];
@@ -373,9 +379,13 @@ const transform = (text: string) => (
         },
       ];
     case "arg.group":
-      return node.content.map(transform(text)).reduce((a, b) => [...a, ...b], []);
+      return node.content
+        .map(transform(text))
+        .reduce((a, b) => [...a, ...b], []);
     case "arg.optional":
-      return node.content.map(transform(text)).reduce((a, b) => [...a, ...b], []);
+      return node.content
+        .map(transform(text))
+        .reduce((a, b) => [...a, ...b], []);
     case "parbreak":
       return [
         {
@@ -394,6 +404,87 @@ const transform = (text: string) => (
           type: "parbreak",
         },
       ];
+    case "command.url":
+      return [
+        {
+          loc: {
+            start: {
+              line: node.location.start.line,
+              column: node.location.start.column - 1,
+            },
+            end: {
+              line: node.location.end.line,
+              column: node.location.end.column - 1,
+            },
+          },
+          range: [node.location.start.offset, node.location.end.offset],
+          raw: text.slice(node.location.start.offset, node.location.end.offset),
+          url: node.url,
+          type: ASTNodeTypes.Link,
+          children: [
+            {
+              loc: {
+                start: {
+                  line: node.location.start.line,
+                  column: node.location.start.column - 1,
+                },
+                end: {
+                  line: node.location.end.line,
+                  column: node.location.end.column - 1,
+                },
+              },
+              range: [node.location.start.offset, node.location.end.offset],
+              raw: text.slice(
+                node.location.start.offset,
+                node.location.end.offset
+              ),
+              value: node.url,
+              type: ASTNodeTypes.Str,
+            },
+          ],
+        },
+      ];
+    case "command.href":
+      return [
+        {
+          loc: {
+            start: {
+              line: node.location.start.line,
+              column: node.location.start.column - 1,
+            },
+            end: {
+              line: node.location.end.line,
+              column: node.location.end.column - 1,
+            },
+          },
+          range: [node.location.start.offset, node.location.end.offset],
+          raw: text.slice(node.location.start.offset, node.location.end.offset),
+          url: node.url,
+          type: ASTNodeTypes.Link,
+          children: node.content
+            .map(transform(text))
+            .reduce((a, b) => [...a, ...b], []),
+        },
+      ];
+    case "command.label":
+      return [
+        {
+          loc: {
+            start: {
+              line: node.location.start.line,
+              column: node.location.start.column - 1,
+            },
+            end: {
+              line: node.location.end.line,
+              column: node.location.end.column - 1,
+            },
+          },
+          range: [node.location.start.offset, node.location.end.offset],
+          raw: text.slice(node.location.start.offset, node.location.end.offset),
+          value: node.label,
+          type: ASTNodeTypes.Html,
+        },
+      ];
     case "ignore":
     case "alignmentTab":
     case "activeCharacter":
@@ -409,7 +500,10 @@ const transform = (text: string) => (
 const transformListItems = (text: string) => (
   node: latexParser.Node
 ): (TxtTextNode | TxtNode)[] => {
-  if(node.kind === "command" && node.name === "item" || node.kind === "math.character") {
+  if (
+    (node.kind === "command" && node.name === "item") ||
+    node.kind === "math.character"
+  ) {
     return [];
   }
   return [
@@ -430,7 +524,7 @@ const transformListItems = (text: string) => (
       children: transform(text)(node),
     },
   ];
-}
+};
 
 export const parse = (text: string): TxtParentNode => {
   const parserOpt = {
