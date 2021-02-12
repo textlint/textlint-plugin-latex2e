@@ -1,5 +1,6 @@
 # Textlint Plugin LaTeX2ε
 [![npm](https://img.shields.io/npm/v/textlint-plugin-latex2e.svg)](https://www.npmjs.com/package/textlint-plugin-latex2e)
+[![package quality](https://packagequality.com/shield/textlint-plugin-latex2e.svg)](https://packagequality.com/#?package=textlint-plugin-latex2e)
 [![actions](https://github.com/textlint/textlint-plugin-latex2e/workflows/Node%20CI/badge.svg)](https://github.com/textlint/textlint-plugins-latex2e/actions)
 
 textlint-plugin-latex2e depends on [the LaTeX parser](https://github.com/tamuratak/latex-utensils) since v1.0.0!
