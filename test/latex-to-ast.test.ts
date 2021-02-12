@@ -4,9 +4,7 @@ import { parse } from "../src/latex-to-ast";
 import { TextlintKernel } from "@textlint/kernel";
 import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
 
-import textlintRuleGinger from "textlint-rule-ginger";
-import textlintRuleSpellCheckTechWord from "textlint-rule-spellcheck-tech-word";
-
+import TextlintRuleSpelling from "textlint-rule-spelling";
 import LaTeXProcessor from "../src";
 import MarkdownProcessor from "@textlint/textlint-plugin-markdown";
 
@@ -239,13 +237,13 @@ describe("Fixing document", () => {
     rules: [
       {
         ruleId: "spelling",
-        rule: require("textlint-rule-spelling"),
+        rule: TextlintRuleSpelling,
         options: {
           language: "en",
-          suggestCorrections: true
-        }
-      }
-    ]
+          suggestCorrections: true,
+        },
+      },
+    ],
   };
   test("latex code", async () => {
     const input = `
