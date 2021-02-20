@@ -7,6 +7,15 @@
         "project": "./tsconfig.json"
       },
       "extends": ["plugin:@typescript-eslint/recommended"]
+    },
+    {
+      "files": ["*.js", "tex2tast"],
+      "parserOptions": {
+        "ecmaVersion": 2015
+      },
+      "env": {
+        "node": true
+      }
     }
   ]
 }

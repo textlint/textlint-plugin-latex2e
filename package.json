@@ -3,6 +3,9 @@
   "version": "1.1.0",
   "description": "A textlint plugin for LaTeX2e",
   "main": "lib/index.js",
+  "bin": {
+    "tex2tast": "./bin/tex2tast"
+  },
   "scripts": {
     "lint": "run-p lint:*",
     "lint:eslint": "eslint '**/*.{ts,js}'",
@@ -64,5 +67,8 @@
   "bugs": {
     "url": "https://github.com/textlint/textlint-plugin-latex2e/issues"
   },
-  "homepage": "https://github.com/textlint/textlint-plugin-latex2e#readme"
+  "homepage": "https://github.com/textlint/textlint-plugin-latex2e#readme",
+  "optionalDependencies": {
+    "commander": "^7.1.0"
+  }
 }
