@@ -52,7 +52,7 @@
     "ts-jest": "^26.4.1",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.3",
-    "typescript-language-server": "^0.4.0"
+    "typescript-language-server": "^0.5.1"
   },
   "directories": {
     "test": "test"
