@@ -1,11 +1,21 @@
 {
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "plugins": ["@typescript-eslint"],
-    "parserOptions": {
+  "extends": ["eslint:recommended"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
         "project": "./tsconfig.json"
+      },
+      "extends": ["plugin:@typescript-eslint/recommended"]
+    },
+    {
+      "files": ["*.js", "tex2tast"],
+      "parserOptions": {
+        "ecmaVersion": 2015
+      },
+      "env": {
+        "node": true
+      }
     }
+  ]
 }

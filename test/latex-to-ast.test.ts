@@ -11,6 +11,10 @@ import { parse } from "../src/latex-to-ast";
 import { TextlintKernel } from "@textlint/kernel";
 import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
 
+import TextlintRuleSpelling from "textlint-rule-spelling";
+import LaTeXProcessor from "../src";
+import MarkdownProcessor from "@textlint/textlint-plugin-markdown";
+
 describe("TxtNode AST", () => {
   test("Issue 42: TypeError is occurred if `Parbreak` node appears before the first appearance of actual sentence", () => {
     const code1 = `
@@ -155,10 +159,10 @@ describe("TxtNode AST", () => {
         `;
     const actual = parse(code);
     ASTTester.test(actual);
-    expect(actual.children.length).toBe(1);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Comment);
-    expect(actual.children[0].children[4].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children.length).toBe(7);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[4].type).toBe(ASTNodeTypes.Comment);
   });
   test("issue52", () => {
     const code = `A%B
@@ -179,14 +183,14 @@ C`;
     const actual = parse(code);
     ASTTester.test(actual);
     expect(actual.children.length).toBe(1);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.CodeBlock);
-    expect(actual.children[0].children[0].children).toBe(undefined);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[0].children).toBe(undefined);
   });
   test("url command", () => {
     const code = `\\url{http://example.com/}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
     expect(actual.children[0].children[0].children[0].value).toBe(
@@ -197,6 +201,7 @@ C`;
     const code = `\\href{http://example.com/}{link}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
     expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
     expect(actual.children[0].children[0].url).toBe("http://example.com/");
     expect(actual.children[0].children[0].children[0].value).toBe("link");
@@ -205,9 +210,23 @@ C`;
     const code = `\\ref{label}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Html);
-    expect(actual.children[0].children[0].value).toBe("label");
-    expect(actual.children[0].children[0].raw).toBe(code);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].value).toBe("label");
+    expect(actual.children[0].raw).toBe(code);
+  });
+  test("CodeBlock is not to be included in paragraph", () => {
+    const code = `\\section{title}
+hogehoge
+\\begin{equation}
+  x = y
+\\end{equation}
+fugafuga`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(7);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[4].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[6].type).toBe(ASTNodeTypes.Paragraph);
   });
 });
 
@@ -216,24 +235,20 @@ describe("Fixing document", () => {
   const options = {
     filePath: "<test>",
     plugins: [
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      { pluginId: "latex2e", plugin: require("../src").default },
+      { pluginId: "latex2e", plugin: LaTeXProcessor },
       {
         pluginId: "markdown",
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        plugin: require("@textlint/textlint-plugin-markdown").default,
+        plugin: MarkdownProcessor,
       },
     ],
     rules: [
       {
-        ruleId: "spellcheck-tech-word",
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        rule: require("textlint-rule-spellcheck-tech-word"),
-      },
-      {
-        ruleId: "ginger",
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        rule: require("textlint-rule-ginger").default,
+        ruleId: "spelling",
+        rule: TextlintRuleSpelling,
+        options: {
+          language: "en",
+          suggestCorrections: true,
+        },
       },
     ],
   };
@@ -241,19 +256,19 @@ describe("Fixing document", () => {
     const input = `
         \\documentclass{article}
         \\begin{document}
-        I has a pens.
+        What colour do you like?
 
         \\hoge
-        I has a pens.
+        What color do you like?
         \\end{document}
         `;
     const output = `
         \\documentclass{article}
         \\begin{document}
-        I have a pen.
+        What color do you like?
 
         \\hoge
-        I have a pen.
+        What color do you like?
         \\end{document}
         `;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
@@ -263,18 +278,18 @@ describe("Fixing document", () => {
   test("latex code one line", async () => {
     const input = `
         \\documentclass{article}
-        \\begin{document}I has a pens.\\end{document}
+        \\begin{document}What colour do you like?\\end{document}
         `;
     const output = `
         \\documentclass{article}
-        \\begin{document}I have a pen.\\end{document}
+        \\begin{document}What color do you like?\\end{document}
         `;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });
   test("latex code outside of document environment", async () => {
-    const input = `I has a pens.`;
-    const output = `I have a pen.`;
+    const input = `What colour do you like?`;
+    const output = `What color do you like?`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
   });
@@ -283,13 +298,13 @@ describe("Fixing document", () => {
         \\documentclass{article}
         \\begin{document}
           % comment
-          I have a pen.
+          What colour do you like?
         \\end{document}`;
     const output = `
         \\documentclass{article}
         \\begin{document}
           % comment
-          I have a pen.
+          What color do you like?
         \\end{document}`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
     expect(result.output).toBe(output);
@@ -299,13 +314,13 @@ describe("Fixing document", () => {
     const input = `\\documentclass{article}
         % comment
         \\begin{document}
-          I have a pen.
+          What colour do you like?
         \\end{document}
         % comment`;
     const output = `\\documentclass{article}
         % comment
         \\begin{document}
-          I have a pen.
+          What color do you like?
         \\end{document}
         % comment`;
     const result = await kernel.fixText(input, { ...options, ext: ".tex" });
