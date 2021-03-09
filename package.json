@@ -32,7 +32,7 @@
     "latex"
   ],
   "author": "TANIGUCHI Masaya",
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "dependencies": {
     "@textlint/ast-node-types": "^4.3.4",
     "fp-ts": "^2.8.3",

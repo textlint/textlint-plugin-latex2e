@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2020 Textlint Plugin LaTex2e team. All rights reserved.
+ &
+ * This file is part of textlint-plugin-latex2e
+ * This software is released under the MIT License, see LICENSE.md .
+ */
+
 import * as ASTTester from "@textlint/ast-tester";
 import "jest";
 import { parse } from "../src/latex-to-ast";
