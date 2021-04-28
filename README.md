@@ -34,4 +34,4 @@ Copyright (C) 2018-2020 Textlint Plugin LaTeX2e Maintainers ALL Rights Reserved.
 
 ## License
 
-This software is licensed under the GPLv3 or later.
+This software is licensed under the MIT License.
