@@ -9,6 +9,10 @@ updates:
       day: "saturday"
       time: "09:00"
       timezone: "Asia/Tokyo"
+    automerged_updates:
+      - match:
+          dependency_type: all
+          update_type: semver:minor
   - directory: "/"
     open-pull-requests-limit: 5
     package-ecosystem: "github-actions" 
