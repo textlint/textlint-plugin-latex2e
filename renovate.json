@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":timezone(Asia/Tokyo)",
+    ":automergeMinor",
+    ":automergeRequireAllStatusChecks"
+  ],
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^latex-utensils$"],
+      "automerge": true,
+      "minor": {
+        "automerge": false
+      }
+    }
+  ]
+}
