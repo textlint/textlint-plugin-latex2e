@@ -25,7 +25,7 @@ jobs:
                   CI: true
             - name: Check availability
               id: check_availability
-              run: $(npm bin)/can-npm-publish
+              run: npx can-npm-publish
               continue-on-error: true
             - name: Check tag
               id: check_tag
