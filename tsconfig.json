@@ -67,6 +67,6 @@
     // "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
-  "exclude": [".git", "node_modules"]
+  "exclude": [".git", "node_modules", "test"]
 }
 /* vim: set ft=javascript : */
