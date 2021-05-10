@@ -21,29 +21,27 @@ export const convertCommentToTxtNode = (
   if (!comments) {
     return [];
   }
-  return comments?.map(
-    (comment: latexParser.Comment): TxtNode => {
-      return {
-        loc: {
-          start: {
-            line: comment.location.start.line,
-            column: comment.location.start.column - 1,
-          },
-          end: {
-            line: comment.location.end.line,
-            column: comment.location.end.column - 1,
-          },
+  return comments?.map((comment: latexParser.Comment): TxtNode => {
+    return {
+      loc: {
+        start: {
+          line: comment.location.start.line,
+          column: comment.location.start.column - 1,
         },
-        range: [comment.location.start.offset, comment.location.end.offset],
-        raw: rawText.slice(
-          comment.location.start.offset,
-          comment.location.end.offset
-        ),
-        value: comment.content,
-        type: ASTNodeTypes.Comment,
-      };
-    }
-  );
+        end: {
+          line: comment.location.end.line,
+          column: comment.location.end.column - 1,
+        },
+      },
+      range: [comment.location.start.offset, comment.location.end.offset],
+      raw: rawText.slice(
+        comment.location.start.offset,
+        comment.location.end.offset
+      ),
+      value: comment.content,
+      type: ASTNodeTypes.Comment,
+    };
+  });
 };
 
 export const isAppearedBeforeNode = (
@@ -109,16 +107,17 @@ export const insertComment = (
 };
 
 // Mapping all comments to the given AST.
-export const completeComments = (comments: latexParser.Comment[]) => (
-  rawText: string
-) => (root: TxtParentNode): TxtParentNode => {
-  if (comments.length === 0) {
-    return root;
-  }
-  const textlintComments = convertCommentToTxtNode(rawText, comments);
-  const copiedRoot = JSON.parse(JSON.stringify(root));
-  for (const comment of textlintComments) {
-    copiedRoot.children = insertComment(comment, copiedRoot.children);
-  }
-  return copiedRoot;
-};
+export const completeComments =
+  (comments: latexParser.Comment[]) =>
+  (rawText: string) =>
+  (root: TxtParentNode): TxtParentNode => {
+    if (comments.length === 0) {
+      return root;
+    }
+    const textlintComments = convertCommentToTxtNode(rawText, comments);
+    const copiedRoot = JSON.parse(JSON.stringify(root));
+    for (const comment of textlintComments) {
+      copiedRoot.children = insertComment(comment, copiedRoot.children);
+    }
+    return copiedRoot;
+  };
