@@ -13,4 +13,4 @@
  * You should have received a copy of the GNU General Public License
  * along with textlint-plugin-latex2e.  If not, see <http://www.gnu.org/licenses/>.
  */
-require("../lib/src/bin/tex2tast.js")
+require("../lib/bin/tex2tast.js")
