@@ -39,7 +39,7 @@ export default (rootNode: TxtParentNode): TxtParentNode => {
     switch (node.type) {
       case ASTNodeTypes.CodeBlock:
       case ASTNodeTypes.Header:
-      case ASTNodeTypes.Html:
+      case ASTNodeTypes.HtmlBlock:
         pushChild(paragraph);
         paragraph = [];
         children.push(node);
