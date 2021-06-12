@@ -210,9 +210,10 @@ C`;
     const code = `\\ref{label}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Html);
-    expect(actual.children[0].value).toBe("label");
-    expect(actual.children[0].raw).toBe(code);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].children[0].value).toBe("label");
+    expect(actual.children[0].children[0].raw).toBe(code);
   });
   test("CodeBlock is not to be included in paragraph", () => {
     const code = `\\section{title}
@@ -227,6 +228,12 @@ fugafuga`;
     expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
     expect(actual.children[4].type).toBe(ASTNodeTypes.CodeBlock);
     expect(actual.children[6].type).toBe(ASTNodeTypes.Paragraph);
+  });
+  test("ref should be included in paragraph", () => {
+    const code = `This sentence \\ref{refs} must be parsed as one paragraph.`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
   });
 });
 
