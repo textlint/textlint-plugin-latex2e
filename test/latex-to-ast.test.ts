@@ -85,10 +85,10 @@ describe("TxtNode AST", () => {
     \\end{document}`;
     const parsedAst = parse(code);
     ASTTester.test(parsedAst);
-    expect(parsedAst.children[0].children[0].type).toBe("ListItem");
     expect(parsedAst.children[0].children[2].type).toBe("ListItem");
-    expect(parsedAst.children[0].children[4].type).toBe("ListItem");
-    expect(parsedAst.children[0].children[4].children[0].type).toBe("ListItem");
+    expect(parsedAst.children[0].children[6].type).toBe("ListItem");
+    expect(parsedAst.children[0].children[8].type).toBe("ListItem");
+    expect(parsedAst.children[0].children[8].children[2].type).toBe("ListItem");
   });
   test("Paragraph should not be nested", () => {
     const code = `\\documentclass{article}
@@ -234,6 +234,27 @@ fugafuga`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
     expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+  });
+  test("comments with blank lines should be allowed in itemize environment", () => {
+    const code = `\\begin{itemize}
+  \\item item1
+
+  % comment
+  \\item item2
+\\end{itemize}`;
+    const actual = parse(code);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.ListItem);
+    expect(actual.children[0].children[3].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].children[4].type).toBe(ASTNodeTypes.Comment);
+    // actual.children[0].children[5] is a linebreak and whitespace after the comment.
+    expect(actual.children[0].children[5].type).toBe(ASTNodeTypes.Html);
+    // actual.children[0].children[6] is the second \item.
+    expect(actual.children[0].children[6].type).toBe(ASTNodeTypes.Html);
+    // actual.children[0].children[7] is a whitespace after the second \item.
+    expect(actual.children[0].children[7].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[0].children[8].type).toBe(ASTNodeTypes.ListItem);
   });
 });
 

@@ -525,12 +525,11 @@ const transform =
 const transformListItems =
   (text: string) =>
   (node: latexParser.Node): (TxtTextNode | TxtNode)[] => {
-    if (
-      (node.kind === "command" && node.name === "item") ||
-      node.kind === "math.character"
-    ) {
+    if (node.kind === "math.character" || node.kind === "parbreak") {
       return [];
     }
+    const isItemCommand = node.kind === "command" && node.name === "item";
+    const nodeType = isItemCommand ? ASTNodeTypes.Html : ASTNodeTypes.ListItem;
     return [
       {
         loc: {
@@ -545,7 +544,7 @@ const transformListItems =
         },
         range: [node.location.start.offset, node.location.end.offset],
         raw: text.slice(node.location.start.offset, node.location.end.offset),
-        type: ASTNodeTypes.ListItem,
+        type: nodeType,
         children: transform(text)(node),
       },
     ];
