@@ -58,14 +58,12 @@ const program = new Command();
 program
   .option("-l, --location", "include location and range")
   .option("-r, --raw", "include raw")
-  .usage("[OPTIONS] FILE")
+  .argument("<file>", "Path to TeX source")
+  .showHelpAfterError()
   .parse(process.argv);
 
 const filename = program.args[0];
 if (!fs.existsSync(filename)) {
-  if (!filename || filename === "") {
-    program.help();
-  }
   console.error(`${filename} does not exist`);
   process.exit(1);
 }
