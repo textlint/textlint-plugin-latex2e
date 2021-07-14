@@ -32,6 +32,14 @@ Copyright (C) 2018-2020 Textlint Plugin LaTeX2e Maintainers ALL Rights Reserved.
 - Shoma Kokuryo ([@pddg](https://github.com/pddg))
 - K Ito([@kn1cht](https://github.com/kn1cht))
 
+### Sponsorship
+
+This project is maintained by volunteers.
+If you are using this project where it is important,
+consider one time or regular donations, please.
+
+- [❤️ GitHub Sponsors (@tani)](https://github.com/sponsors/tani)
+
 ## License
 
 This software is licensed under the MIT License.
