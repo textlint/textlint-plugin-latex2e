@@ -23,8 +23,8 @@ jobs:
         env:
           CI: true
       - name: Build package
-        run: npm build
+        run: npm run build
       - name: Test package
-        run: npm test
+        run: npm run test
       - name: Lint package
         run: npm run lint
