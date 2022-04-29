@@ -4,11 +4,11 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [14.x, 16.x, 18.x]
 
     steps:
       - name: Checkout source
@@ -23,8 +23,8 @@ jobs:
         env:
           CI: true
       - name: Build package
-        run: npm build
+        run: npm run build
       - name: Test package
-        run: npm test
+        run: npm run test
       - name: Lint package
         run: npm run lint
