@@ -69,6 +69,6 @@
   },
   "homepage": "https://github.com/textlint/textlint-plugin-latex2e#readme",
   "optionalDependencies": {
-    "commander": "^8.0.0"
+    "commander": "^9.0.0"
   }
 }
