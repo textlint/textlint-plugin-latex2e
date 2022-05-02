@@ -1,3 +1,13 @@
+## 1.2.0
+
+### Changes
+
+- Omit support for Node.js 12.x
+
+### Other
+
+- Update some dependencies
+
 ## 1.1.4
 
 From this release, we will write CHANGELOG for each release.
