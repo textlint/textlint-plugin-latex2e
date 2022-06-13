@@ -52,7 +52,7 @@
     "prettier": "2.6.2",
     "rimraf": "3.0.2",
     "textlint-rule-spelling": "0.3.0",
-    "ts-jest": "28.0.4",
+    "ts-jest": "28.0.5",
     "ts-node": "10.8.1",
     "typescript": "4.7.3",
     "typescript-language-server": "0.11.1"
