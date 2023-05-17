@@ -38,7 +38,7 @@
     "@textlint/textlint-plugin-markdown": "12.3.0",
     "@textlint/types": "12.3.0",
     "@types/jest": "28.1.8",
-    "@types/node": "16.18.31",
+    "@types/node": "18.16.12",
     "@typescript-eslint/eslint-plugin": "5.47.1",
     "@typescript-eslint/parser": "5.47.1",
     "dictionary-en": "3.2.0",
