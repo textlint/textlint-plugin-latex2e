@@ -33,7 +33,7 @@
     "latex-utensils": "^3.0.0"
   },
   "devDependencies": {
-    "@textlint/ast-tester": "12.3.0",
+    "@textlint/ast-tester": "12.6.1",
     "@textlint/kernel": "12.3.0",
     "@textlint/textlint-plugin-markdown": "12.3.0",
     "@textlint/types": "12.3.0",
