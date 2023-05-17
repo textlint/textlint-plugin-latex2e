@@ -53,7 +53,7 @@ jobs:
                 git tag ${TAG}
                 git push origin --tags
             - name: Post comment
-              uses: mshick/add-pr-comment@v1
+              uses: mshick/add-pr-comment@v2
               if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
               with:
                   message: |
@@ -64,7 +64,7 @@ jobs:
                   repo-token-user-login: "github-actions[bot]"
                   allow-repeats: false
             - name: Post comment
-              uses: mshick/add-pr-comment@v1
+              uses: mshick/add-pr-comment@v2
               if: steps.check_availability.outcome == 'failure' || steps.check_tag.outcome == 'failure'
               with:
                   message: |
