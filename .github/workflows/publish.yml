@@ -43,7 +43,7 @@ jobs:
             - name: Publish
               id: npm_publish
               if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
-              uses: JS-DevTools/npm-publish@v1
+              uses: JS-DevTools/npm-publish@v2
               with:
                   token: ${{ secrets.NPM_TOKEN }}
             - name: Tagging
