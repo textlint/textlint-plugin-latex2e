@@ -9,11 +9,17 @@
   "prConcurrentLimit": 5,
   "packageRules": [
     {
-      "matchPackagePatterns": ["^latex-utensils$"],
-      "automerge": true,
-      "minor": {
-        "automerge": false
-      }
+      "groupName": "textlint",
+      "matchPackagePrefixes": ["textlint", "@textlint/"]
+    },
+    {
+      "groupName": "unified-latex",
+      "matchPackagePrefixes": ["@unified-latex/"]
+    },
+    {
+      "groupName": "eslint",
+      "extends": ["packages:eslint"],
+      "matchPackageNames": ["eslint-config-prettier"]
     }
   ]
 }
