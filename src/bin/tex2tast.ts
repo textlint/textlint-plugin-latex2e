@@ -18,7 +18,7 @@ import * as path from "path";
 
 import { Command } from "commander";
 
-import { parse } from "../latex-to-ast";
+import { parse } from "../parse.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const hasProperty = (obj: any, key: string) => {
