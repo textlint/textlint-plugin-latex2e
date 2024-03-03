@@ -3,6 +3,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
+    // This requires since unified-latex is not a native ES module
+    // Refs: https://github.com/siefkenj/unified-latex/issues/72
     "moduleResolution": "Bundler",
     "lib": ["ESNext"],
     "outDir": "./lib",
