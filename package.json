@@ -30,9 +30,9 @@
   "license": "MIT",
   "dependencies": {
     "@textlint/ast-node-types": "^14.0.2",
-    "@unified-latex/unified-latex-types": "^1.6.1",
-    "@unified-latex/unified-latex-util-arguments": "^1.6.1",
-    "@unified-latex/unified-latex-util-parse": "^1.6.1"
+    "@unified-latex/unified-latex-types": "^1.7.0",
+    "@unified-latex/unified-latex-util-arguments": "^1.7.0",
+    "@unified-latex/unified-latex-util-parse": "^1.7.0"
   },
   "devDependencies": {
     "@textlint/ast-tester": "14.0.2",
