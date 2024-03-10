@@ -34,7 +34,7 @@ import {
 // This function will detect the start and end of a paragraph and convert them to a paragraph node.
 export const convertNodes = (
   nodes: LatexAst.Node[],
-  rawText: string
+  rawText: string,
 ): BlockContent[] => {
   const allNodes: BlockContent[] = [];
   let paragraphStartLoc: TxtNodeLocation | null = null;
@@ -94,7 +94,7 @@ export const convertNodes = (
       case "string": {
         if (!paragraphStartLoc || !paragraphStartRange) {
           [paragraphStartLoc, paragraphStartRange] = convertPosition(
-            node.position
+            node.position,
           );
         }
         const strNode = convertInlineNode(node, rawText);
@@ -115,7 +115,7 @@ export const convertNodes = (
       // root node is not expected in this context.
       case "root":
         throw new Error(
-          "Unexpected root node at: " + JSON.stringify(node.position)
+          "Unexpected root node at: " + JSON.stringify(node.position),
         );
     }
     [lastLoc, lastRange] = convertPosition(node.position);
@@ -127,14 +127,14 @@ export const convertNodes = (
 // convertInlineNode converts a LaTeX AST node to inline textlint AST nodes.
 export const convertInlineNode = (
   node: LatexAst.Node,
-  rawText: string
+  rawText: string,
 ): PhrasingContent[] => {
   if (!node.position) {
     return [];
   }
   const raw = rawText.slice(
     node.position.start.offset,
-    node.position.end.offset
+    node.position.end.offset,
   );
   const [loc, range] = convertPosition(node.position);
   switch (node.type) {
@@ -281,7 +281,7 @@ export const convertInlineNode = (
       console.error(
         `WARNING: Unexpected node type for InlineNode: ${
           node.type
-        } at ${JSON.stringify(node.position)}`
+        } at ${JSON.stringify(node.position)}`,
       );
       return [];
   }
@@ -289,14 +289,14 @@ export const convertInlineNode = (
 
 export const convertBlockNode = (
   node: LatexAst.Node,
-  rawText: string
+  rawText: string,
 ): BlockContent[] => {
   if (!node.position) {
     return [];
   }
   const raw = rawText.slice(
     node.position.start.offset,
-    node.position.end.offset
+    node.position.end.offset,
   );
   const [loc, range] = convertPosition(node.position);
   switch (node.type) {
@@ -410,7 +410,7 @@ export const convertBlockNode = (
       console.error(
         `WARNING: Unexpected node type for BlockNode: ${
           node.type
-        } at ${JSON.stringify(node.position)}`
+        } at ${JSON.stringify(node.position)}`,
       );
       return [];
   }
@@ -418,7 +418,7 @@ export const convertBlockNode = (
 
 export const convertToHTMLOrComment = (
   node: LatexAst.Node,
-  rawText: string
+  rawText: string,
 ): TxtHtmlNode | TxtCommentNode | null => {
   if (!node.position) {
     return null;
@@ -458,7 +458,7 @@ export const convertToHTMLOrComment = (
 
 const convertListItem = (
   node: LatexAst.Node,
-  rawText: string
+  rawText: string,
 ): TxtListItemNode[] => {
   if (!node.position) {
     return [];
@@ -530,14 +530,14 @@ const convertListItem = (
 
 const convertListItems = (
   nodes: LatexAst.Node[],
-  rawText: string
+  rawText: string,
 ): TxtListItemNode[] => {
   return nodes.flatMap((node) => convertListItem(node, rawText));
 };
 
 const convertCell = (
   nodes: PhrasingContent[],
-  rawText: string
+  rawText: string,
 ): TxtTableCellNode[] => {
   if (nodes.length === 0) {
     return [];
@@ -564,7 +564,7 @@ const convertCell = (
 
 const convertRows = (
   nodes: LatexAst.Node[],
-  rawText: string
+  rawText: string,
 ): TableContent[] => {
   const rows: TxtTableRowNode[] = [];
   let cellChildrenCandidates: PhrasingContent[] = [];

@@ -19,7 +19,7 @@ export const parse = (document: string): TxtDocumentNode => {
 
 export const convertToTextlintAST = (
   root: LatexAst.Root,
-  rawText: string
+  rawText: string,
 ): TxtDocumentNode => {
   if (!root.position) {
     throw new Error("root.position is required");
@@ -29,7 +29,7 @@ export const convertToTextlintAST = (
   // Therefore, we need to split the document into preamble (before \begin{document}), content, and postamble (after \end{document}).
   // eslint-disable-next-line prefer-const
   let [preamble, content, postamble] = splitDocument(
-    flattenGroups(root.content)
+    flattenGroups(root.content),
   );
 
   if (content.length === 0) {
@@ -68,7 +68,7 @@ export const convertToTextlintAST = (
 // This try to find `\begin{document}` and extract its content as document.
 // First part is preamble, second part is document, and third part is postamble.
 const splitDocument = (
-  nodes: LatexAst.Node[]
+  nodes: LatexAst.Node[],
 ): [LatexAst.Node[], LatexAst.Node[], LatexAst.Node[]] => {
   const preamble: LatexAst.Node[] = [];
   const content: LatexAst.Node[] = [];
@@ -89,7 +89,7 @@ const splitDocument = (
 // LaTeX AST has a lot of string nodes since a whitespace is an independent node.
 // We concatenate adjacent string nodes to make str node easier to handle.
 const concatAdjacentStrNodes = <NodeType extends Content>(
-  nodes: NodeType[]
+  nodes: NodeType[],
 ): NodeType[] => {
   const concatText = (nodes: PhrasingContent[]): PhrasingContent[] => {
     const textNodes: PhrasingContent[] = [];

@@ -20,7 +20,7 @@ export const flattenGroups = (nodes: LatexAst.Node[]): LatexAst.Node[] => {
 
 export const extractStringFromNodes = (
   nodes: LatexAst.Node[],
-  rawText: string
+  rawText: string,
 ): string => {
   return nodes
     .map((node): string => {
@@ -33,7 +33,7 @@ export const extractStringFromNodes = (
           }
           return rawText.slice(
             node.position.start.offset,
-            node.position.end.offset
+            node.position.end.offset,
           );
         case "macro":
           return extractStringFromArgs(node, rawText);
@@ -48,18 +48,18 @@ export const extractStringFromNodes = (
 
 export const extractStringFromArgs = (
   node: LatexAst.Macro | LatexAst.Environment,
-  rawText: string
+  rawText: string,
 ): string => {
   // Most cases, last argument is the content of the macro to be shown in LaTeX.
   return extractStringFromNodes(
     getArgsContent(node).findLast(notNull) || [],
-    rawText
+    rawText,
   );
 };
 
 export const asStrNode = (
   nodes: LatexAst.Node[],
-  rawText: string
+  rawText: string,
 ): TxtStrNode | null => {
   if (nodes.length === 0) {
     return null;
@@ -83,7 +83,7 @@ export const asStrNode = (
 };
 
 export const convertPosition = (
-  position: Position
+  position: Position,
 ): [TxtNodeLocation, TxtNodeRange] => {
   return [
     {
@@ -133,7 +133,7 @@ const estimateMacroLength = (node: LatexAst.Macro): number => {
 };
 
 export const estimateMacroPosition = (
-  node: LatexAst.Macro
+  node: LatexAst.Macro,
 ): [TxtNodeLocation, TxtNodeRange] | null => {
   if (!node.position) {
     return null;
