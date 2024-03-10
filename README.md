@@ -14,7 +14,7 @@ $ npm install textlint-plugin-latex2e
 And add to `.textlintrc`
 
 ```
-   plugins: ["latex2e"]
+   plugins: ["@textlint/textlint-plugin-latex2e"]
 ```
 
 ## Limitations

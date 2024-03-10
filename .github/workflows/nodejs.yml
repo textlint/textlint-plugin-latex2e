@@ -32,5 +32,7 @@ jobs:
         run: npm run build
       - name: Test package
         run: npm run test
+        env:
+          E2E: true
       - name: Lint package
         run: npm run lint
