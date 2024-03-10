@@ -1,0 +1,65 @@
+{
+  "type": "Document",
+  "raw": "\\begin{verbatim}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{verbatim}\n\n\\begin{lstlisting}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{lstlisting}\n\n\\begin{minted}{latex}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{minted}\n",
+  "range": [0, 333],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 15,
+      "column": 1
+    }
+  },
+  "children": [
+    {
+      "type": "CodeBlock",
+      "raw": "\\begin{verbatim}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{verbatim}",
+      "range": [0, 107],
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 4,
+          "column": 15
+        }
+      },
+      "value": "\\begin{verbatim}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{verbatim}"
+    },
+    {
+      "type": "CodeBlock",
+      "raw": "\\begin{lstlisting}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{lstlisting}",
+      "range": [109, 220],
+      "loc": {
+        "start": {
+          "line": 6,
+          "column": 1
+        },
+        "end": {
+          "line": 9,
+          "column": 17
+        }
+      },
+      "value": "\\begin{lstlisting}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{lstlisting}"
+    },
+    {
+      "type": "CodeBlock",
+      "raw": "\\begin{minted}{latex}\n    \\section{This is a section}\n    This latex string should not be parset.\n\\end{minted}",
+      "range": [222, 332],
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 1
+        },
+        "end": {
+          "line": 14,
+          "column": 13
+        }
+      },
+      "value": "\n    \\section{This is a section}\n    This latex string should not be parset.\n"
+    }
+  ]
+}

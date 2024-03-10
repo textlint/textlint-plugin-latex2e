@@ -20,7 +20,7 @@ import TextlintRuleSpelling from "textlint-rule-spelling";
 import LaTeXProcessor from "../src";
 import MarkdownProcessor from "@textlint/textlint-plugin-markdown";
 
-describe("TxtNode AST", () => {
+describe.concurrent("TxtNode AST", () => {
   test("Issue 42: TypeError is occurred if `Parbreak` node appears before the first appearance of actual sentence", () => {
     const code1 = `
         \\documentclass{article}
