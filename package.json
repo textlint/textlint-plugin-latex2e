@@ -2,8 +2,23 @@
   "name": "textlint-plugin-latex2e",
   "version": "1.2.1",
   "description": "A textlint plugin for LaTeX2e",
-  "main": "lib/index.js",
   "type": "module",
+  "main": "cjs/src/index.js",
+  "types": "cjs/stc/index.d.ts",
+  "module": "lib/src/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/src/index.d.ts",
+        "default": "./lib/src/index.js"
+      },
+      "require": {
+        "types": "./cjs/src/index.d.ts",
+        "default": "./cjs/src/index.js"
+      },
+      "default": "./cjs/src/index.js"
+    }
+  },
   "bin": {
     "tex2tast": "./bin/tex2tast"
   },
@@ -14,7 +29,7 @@
     "fix": "run-s fix:prettier fix:eslint",
     "fix:eslint": "eslint --fix '**/*.{ts,js}'",
     "fix:prettier": "prettier --write '**/*.{ts,js,json}'",
-    "build": "tsc",
+    "build": "tsc -p . && tsc -p ./tsconfig.cjs.json && tsconfig-to-dual-package",
     "test": "vitest run",
     "clean": "rimraf lib",
     "prepare": "npm run clean && npm run build",
@@ -52,6 +67,7 @@
     "prettier": "2.8.8",
     "rimraf": "^5.0.5",
     "textlint-rule-spelling": "0.3.0",
+    "tsconfig-to-dual-package": "^1.2.0",
     "typescript": "^5.3.3",
     "vitest": "^1.3.1"
   },
