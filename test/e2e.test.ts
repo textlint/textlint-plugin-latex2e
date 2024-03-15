@@ -87,7 +87,9 @@ const prepare = (moduleType: string): string => {
   );
   const errorTexFile = readFromTmplDir("error.tex.tmpl");
 
-  const tmpDir = fs.mkdtempSync(os.tmpdir());
+  const tmpDir = fs.mkdtempSync(
+    path.join(os.tmpdir(), "textlint-plugin-latex-e2e-"),
+  );
   const writeToTmpDir = (filename: string, content: string): void => {
     fs.writeFileSync(path.join(tmpDir, filename), content);
   };
