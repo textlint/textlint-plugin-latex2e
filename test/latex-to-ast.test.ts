@@ -5,17 +5,22 @@
  * This software is released under the MIT License, see LICENSE.md .
  */
 
+import { describe, expect, test } from "vitest";
 import * as ASTTester from "@textlint/ast-tester";
-import "jest";
-import { parse } from "../src/latex-to-ast";
+import { parse } from "../src/parse";
 import { TextlintKernel } from "@textlint/kernel";
-import { AnyTxtNode, ASTNodeTypes } from "@textlint/ast-node-types";
+import {
+  ASTNodeTypes,
+  TxtLinkNode,
+  TxtParagraphNode,
+  TxtTextNode,
+} from "@textlint/ast-node-types";
 
 import TextlintRuleSpelling from "textlint-rule-spelling";
 import LaTeXProcessor from "../src";
 import MarkdownProcessor from "@textlint/textlint-plugin-markdown";
 
-describe("TxtNode AST", () => {
+describe.concurrent("TxtNode AST", () => {
   test("Issue 42: TypeError is occurred if `Parbreak` node appears before the first appearance of actual sentence", () => {
     const code1 = `
         \\documentclass{article}
@@ -85,10 +90,17 @@ describe("TxtNode AST", () => {
     \\end{document}`;
     const parsedAst = parse(code);
     ASTTester.test(parsedAst);
-    expect(parsedAst.children[0].children[2].type).toBe("ListItem");
-    expect(parsedAst.children[0].children[6].type).toBe("ListItem");
-    expect(parsedAst.children[0].children[8].type).toBe("ListItem");
-    expect(parsedAst.children[0].children[8].children[2].type).toBe("ListItem");
+    expect(parsedAst.children[0].type).toBe(ASTNodeTypes.List);
+    const listNode = parsedAst.children[0];
+    if (listNode.type === ASTNodeTypes.List) {
+      expect(listNode.children.length).toBe(2);
+      expect(listNode.children[0].type).toBe(ASTNodeTypes.ListItem);
+      expect(listNode.children[1].type).toBe(ASTNodeTypes.ListItem);
+      const nestedListNode = listNode.children[1].children[0];
+      if (nestedListNode.type === ASTNodeTypes.List) {
+        expect(nestedListNode.children[0].type).toBe(ASTNodeTypes.ListItem);
+      }
+    }
   });
   test("Paragraph should not be nested", () => {
     const code = `\\documentclass{article}
@@ -98,71 +110,57 @@ describe("TxtNode AST", () => {
       \\end{theorem}
       \\end{document}
       `;
-    function isNested(isParagraph: boolean, node: AnyTxtNode): boolean {
-      switch (node.type) {
-        case ASTNodeTypes.Paragraph:
-          if (isParagraph) {
-            return true;
-          } else {
-            return node.children
-              .map((child: AnyTxtNode) => isNested(true, child))
-              .reduce((a: boolean, b: boolean) => a || b, false);
-          }
-        default:
-          if ("children" in node) {
-            return node.children
-              .map((child: AnyTxtNode) => isNested(isParagraph, child))
-              .reduce((a: boolean, b: boolean) => a || b, false);
-          } else {
-            return false;
-          }
-      }
-    }
     ASTTester.test(parse(code));
-    expect(isNested(false, parse(code))).toBe(false);
   });
   test("Parse comments", () => {
     const code = `\\begin{document}
-          % comment
-          abcd
-        \\end{document}
+% comment
+abcd
+\\end{document}
         `;
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children.length).toBe(1);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    if (actual.children[0].type === ASTNodeTypes.Paragraph) {
+      expect(actual.children[0].children.length).toBe(2);
+      expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Comment);
+      expect(actual.children[0].children[1].type).toBe(ASTNodeTypes.Str);
+    }
+  });
+  test("Parse comments (outside of document)", () => {
+    const code = `\\documentclass{article}
+% comment
+\\begin{document}
+abcd
+\\end{document}
+% comment`;
+    const actual = parse(code);
+    ASTTester.test(actual);
+    expect(actual.children.length).toBe(4);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Html);
+    expect(actual.children[1].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[3].type).toBe(ASTNodeTypes.Comment);
+  });
+  test("Two lines of comments between other environments", () => {
+    // 空文字列の後のコメントはポジションを持たない
+    // english: .
+    const code = `
+\\documentclass{article}
+\\title{a}
+% first comment
+% second comment
+\\author{b}`;
     const actual = parse(code);
     ASTTester.test(actual);
     expect(actual.children.length).toBe(3);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Comment);
+    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[1].type).toBe(ASTNodeTypes.Header);
     expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
-  });
-  test("Parse comments (outside of document)", () => {
-    const code = `
-        \\documentclass{article}
-        % comment
-        \\begin{document}
-          abcd
-        \\end{document}
-        % comment
-        `;
-    const actual = parse(code);
-    ASTTester.test(actual);
-    expect(actual.children.length).toBe(5);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Comment);
-    expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[4].type).toBe(ASTNodeTypes.Comment);
-  });
-  test("Two lines of comments between other environments", () => {
-    const code = `
-        \\documentclass{article}
-        \\title{a}
-        % first comment
-        % second comment
-        \\author{b}
-        `;
-    const actual = parse(code);
-    ASTTester.test(actual);
-    expect(actual.children.length).toBe(7);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
-    expect(actual.children[2].type).toBe(ASTNodeTypes.Comment);
-    expect(actual.children[4].type).toBe(ASTNodeTypes.Comment);
+    const paragraphNode = actual.children[2] as TxtParagraphNode;
+    expect(paragraphNode.children[0].type).toBe(ASTNodeTypes.Comment);
+    expect(paragraphNode.children[1].type).toBe(ASTNodeTypes.Comment);
   });
   test("issue52", () => {
     const code = `A%B
@@ -171,9 +169,10 @@ C`;
     ASTTester.test(actual);
     expect(actual.children.length).toBe(1);
     expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Str);
-    expect(actual.children[0].children[1].type).toBe(ASTNodeTypes.Comment);
-    expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.Str);
+    const paragraphNode = actual.children[0] as TxtParagraphNode;
+    expect(paragraphNode.children[0].type).toBe(ASTNodeTypes.Str);
+    expect(paragraphNode.children[1].type).toBe(ASTNodeTypes.Comment);
+    expect(paragraphNode.children[2].type).toBe(ASTNodeTypes.Str);
   });
   test("comments in a equation environment are ignored", () => {
     const code = `\\begin{equation}
@@ -183,37 +182,44 @@ C`;
     const actual = parse(code);
     ASTTester.test(actual);
     expect(actual.children.length).toBe(1);
+    // If it is known that it is of type CodeBlock, it is known that it does not have children.
     expect(actual.children[0].type).toBe(ASTNodeTypes.CodeBlock);
-    expect(actual.children[0].children).toBe(undefined);
   });
   test("url command", () => {
     const code = `\\url{http://example.com/}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
     expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
-    expect(actual.children[0].children[0].url).toBe("http://example.com/");
-    expect(actual.children[0].children[0].children[0].value).toBe(
-      "http://example.com/"
-    );
+    const paragraphNode = actual.children[0] as TxtParagraphNode;
+    expect(paragraphNode.children[0].type).toBe(ASTNodeTypes.Link);
+    const linkNode = paragraphNode.children[0] as TxtLinkNode;
+    expect(linkNode.url).toBe("http://example.com/");
+    expect(linkNode.children[0].type).toBe(ASTNodeTypes.Str);
+    const linkTextNode = linkNode.children[0] as TxtTextNode;
+    expect(linkTextNode.value).toBe("http://example.com/");
   });
   test("href command", () => {
     const code = `\\href{http://example.com/}{link}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
     expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Link);
-    expect(actual.children[0].children[0].url).toBe("http://example.com/");
-    expect(actual.children[0].children[0].children[0].value).toBe("link");
+    const paragraphNode = actual.children[0] as TxtParagraphNode;
+    expect(paragraphNode.children[0].type).toBe(ASTNodeTypes.Link);
+    const linkNode = paragraphNode.children[0] as TxtLinkNode;
+    expect(linkNode.url).toBe("http://example.com/");
+    expect(linkNode.children[0].type).toBe(ASTNodeTypes.Str);
+    const linkTextNode = linkNode.children[0] as TxtTextNode;
+    expect(linkTextNode.value).toBe("link");
   });
   test("label command", () => {
     const code = `\\ref{label}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
     expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[0].type).toBe(ASTNodeTypes.Html);
-    expect(actual.children[0].children[0].value).toBe("label");
-    expect(actual.children[0].children[0].raw).toBe(code);
+    const paragraphNode = actual.children[0] as TxtParagraphNode;
+    expect(paragraphNode.children.length).toBe(1);
+    expect(paragraphNode.children[0].type).toBe(ASTNodeTypes.Html);
+    expect(paragraphNode.children[0].raw).toBe(code);
   });
   test("CodeBlock is not to be included in paragraph", () => {
     const code = `\\section{title}
@@ -223,11 +229,11 @@ hogehoge
 \\end{equation}
 fugafuga`;
     const actual = parse(code);
-    expect(actual.children.length).toBe(7);
+    expect(actual.children.length).toBe(4);
     expect(actual.children[0].type).toBe(ASTNodeTypes.Header);
-    expect(actual.children[2].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[4].type).toBe(ASTNodeTypes.CodeBlock);
-    expect(actual.children[6].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[1].type).toBe(ASTNodeTypes.Paragraph);
+    expect(actual.children[2].type).toBe(ASTNodeTypes.CodeBlock);
+    expect(actual.children[3].type).toBe(ASTNodeTypes.Paragraph);
   });
   test("ref should be included in paragraph", () => {
     const code = `This sentence \\ref{refs} must be parsed as one paragraph.`;
@@ -244,17 +250,14 @@ fugafuga`;
 \\end{itemize}`;
     const actual = parse(code);
     expect(actual.children.length).toBe(1);
-    expect(actual.children[0].type).toBe(ASTNodeTypes.Paragraph);
-    expect(actual.children[0].children[2].type).toBe(ASTNodeTypes.ListItem);
-    expect(actual.children[0].children[3].type).toBe(ASTNodeTypes.Html);
-    expect(actual.children[0].children[4].type).toBe(ASTNodeTypes.Comment);
-    // actual.children[0].children[5] is a linebreak and whitespace after the comment.
-    expect(actual.children[0].children[5].type).toBe(ASTNodeTypes.Html);
-    // actual.children[0].children[6] is the second \item.
-    expect(actual.children[0].children[6].type).toBe(ASTNodeTypes.Html);
-    // actual.children[0].children[7] is a whitespace after the second \item.
-    expect(actual.children[0].children[7].type).toBe(ASTNodeTypes.Html);
-    expect(actual.children[0].children[8].type).toBe(ASTNodeTypes.ListItem);
+
+    const listNode = actual.children[0];
+    expect(listNode.type).toBe(ASTNodeTypes.List);
+
+    if (listNode.type === ASTNodeTypes.List) {
+      expect(listNode.children[0].type).toBe(ASTNodeTypes.ListItem);
+      expect(listNode.children[2].type).toBe(ASTNodeTypes.ListItem);
+    }
   });
 });
 

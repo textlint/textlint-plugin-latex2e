@@ -8,18 +8,18 @@ on:
 
 jobs:
     publish:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         if: github.event.pull_request.merged == true
         steps:
             - name: Checkout source
               uses: actions/checkout@v4
               with:
                 fetch-depth: -1
-            - name: Use Node.js "14.x"
+            - name: Use Node.js "18.x"
               uses: actions/setup-node@v4
               with:
                   cache: npm
-                  node-version: "14.x"
+                  node-version: "18.x"
             - name: Install dependencies
               run: npm install
               env:
@@ -61,7 +61,6 @@ jobs:
                       We publish new version of this package.
                       Cheers!
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  repo-token-user-login: "github-actions[bot]"
                   allow-repeats: false
             - name: Post comment
               uses: mshick/add-pr-comment@v2
@@ -72,5 +71,4 @@ jobs:
                       We include your contributions in next release.
                       Cheers!
                   repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  repo-token-user-login: "github-actions[bot]"
                   allow-repeats: false
