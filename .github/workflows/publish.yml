@@ -8,22 +8,25 @@ on:
 
 jobs:
     publish:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         if: github.event.pull_request.merged == true
+        permissions:
+            contents: write
+            pull-requests: write
         steps:
             - name: Checkout source
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
-                fetch-depth: -1
-            - name: Use Node.js "14.x"
-              uses: actions/setup-node@v4
+                  fetch-depth: 0
+            - name: Use Node.js "24.x"
+              uses: actions/setup-node@v6
               with:
                   cache: npm
-                  node-version: "14.x"
+                  node-version: "24.x"
             - name: Install dependencies
-              run: npm install
-              env:
-                  CI: true
+              run: npm ci --ignore-scripts
+            - name: Build package
+              run: npm run build
             - name: Check availability
               id: check_availability
               run: npx can-npm-publish
@@ -43,7 +46,7 @@ jobs:
             - name: Publish
               id: npm_publish
               if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
-              uses: JS-DevTools/npm-publish@v1
+              uses: JS-DevTools/npm-publish@v4
               with:
                   token: ${{ secrets.NPM_TOKEN }}
             - name: Tagging
