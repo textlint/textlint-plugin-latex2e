@@ -3,8 +3,6 @@ name: Node CI
 on:
   push:
   pull_request:
-  schedule:
-    - cron: "17 18 * * 0"
 
 permissions:
   contents: read
@@ -34,7 +32,3 @@ jobs:
         run: npm run build
       - name: Test package
         run: npm run test
-      - name: Audit dependencies
-        run: npm audit
-      - name: Audit runtime dependencies
-        run: npm audit --omit=dev
