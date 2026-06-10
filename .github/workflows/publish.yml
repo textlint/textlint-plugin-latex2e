@@ -12,8 +12,6 @@ jobs:
         if: github.event.pull_request.merged == true
         permissions:
             contents: write
-            issues: write
-            pull-requests: write
         steps:
             - name: Checkout source
               uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
@@ -56,23 +54,3 @@ jobs:
                 TAG=v$(jq -r ".version" package.json)
                 git tag ${TAG}
                 git push origin --tags
-            - name: Post comment
-              if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  gh pr comment "${{ github.event.pull_request.number }}" --edit-last --create-if-none --body-file - <<'EOF'
-                  Thank you for your contributions!
-                  We publish new version of this package.
-                  Cheers!
-                  EOF
-            - name: Post comment
-              if: steps.check_availability.outcome == 'failure' || steps.check_tag.outcome == 'failure'
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  gh pr comment "${{ github.event.pull_request.number }}" --edit-last --create-if-none --body-file - <<'EOF'
-                  Thank you for your contributions!
-                  We include your contributions in next release.
-                  Cheers!
-                  EOF
