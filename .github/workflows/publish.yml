@@ -12,14 +12,15 @@ jobs:
         if: github.event.pull_request.merged == true
         permissions:
             contents: write
+            issues: write
             pull-requests: write
         steps:
             - name: Checkout source
-              uses: actions/checkout@v6
+              uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
               with:
                   fetch-depth: 0
             - name: Use Node.js "24.x"
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
               with:
                   cache: npm
                   node-version: "24.x"
@@ -46,7 +47,7 @@ jobs:
             - name: Publish
               id: npm_publish
               if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
-              uses: JS-DevTools/npm-publish@v4
+              uses: JS-DevTools/npm-publish@0fd2f4369c5d6bcfcde6091a7c527d810b9b5c3f # v4
               with:
                   token: ${{ secrets.NPM_TOKEN }}
             - name: Tagging
@@ -56,24 +57,22 @@ jobs:
                 git tag ${TAG}
                 git push origin --tags
             - name: Post comment
-              uses: mshick/add-pr-comment@v2
               if: steps.check_availability.outcome == 'success' && steps.check_tag.outcome == 'success'
-              with:
-                  message: |
-                      Thank you for your contributions!
-                      We publish new version of this package.
-                      Cheers!
-                  repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  repo-token-user-login: "github-actions[bot]"
-                  allow-repeats: false
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh pr comment "${{ github.event.pull_request.number }}" --edit-last --create-if-none --body-file - <<'EOF'
+                  Thank you for your contributions!
+                  We publish new version of this package.
+                  Cheers!
+                  EOF
             - name: Post comment
-              uses: mshick/add-pr-comment@v2
               if: steps.check_availability.outcome == 'failure' || steps.check_tag.outcome == 'failure'
-              with:
-                  message: |
-                      Thank you for your contributions!
-                      We include your contributions in next release.
-                      Cheers!
-                  repo-token: ${{ secrets.GITHUB_TOKEN }}
-                  repo-token-user-login: "github-actions[bot]"
-                  allow-repeats: false
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh pr comment "${{ github.event.pull_request.number }}" --edit-last --create-if-none --body-file - <<'EOF'
+                  Thank you for your contributions!
+                  We include your contributions in next release.
+                  Cheers!
+                  EOF

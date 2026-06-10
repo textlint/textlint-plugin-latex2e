@@ -2,6 +2,7 @@ name: Node CI
 
 on:
   push:
+    branches: [master]
   pull_request:
 
 permissions:
@@ -18,9 +19,9 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           cache: npm
           node-version: ${{ matrix.node-version }}
