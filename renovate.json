@@ -4,10 +4,15 @@
     "config:base",
     ":timezone(Asia/Tokyo)",
     ":automergeMinor",
-    ":automergeRequireAllStatusChecks"
+    ":automergeRequireAllStatusChecks",
+    "helpers:pinGitHubActionDigests"
   ],
   "prConcurrentLimit": 5,
   "packageRules": [
+    {
+      "matchDatasources": ["npm"],
+      "minimumReleaseAge": "1 day"
+    },
     {
       "matchPackagePatterns": ["^latex-utensils$"],
       "automerge": true,
