@@ -3,6 +3,13 @@
 [![package quality](https://packagequality.com/shield/textlint-plugin-latex2e.svg)](https://packagequality.com/#?package=textlint-plugin-latex2e)
 [![actions](https://github.com/textlint/textlint-plugin-latex2e/workflows/Node%20CI/badge.svg)](https://github.com/textlint/textlint-plugins-latex2e/actions)
 
+> [!IMPORTANT]
+> ### **Maintainers wanted**
+>
+> This project is currently in a transition period and is looking for new maintainers, especially people who actively use both LaTeX and textlint. If you are interested in helping maintain this plugin, please comment on [issue #470](https://github.com/textlint/textlint-plugin-latex2e/issues/470).
+>
+> The repository will remain open for maintainer recruitment until **September 30, 2026**. If maintenance cannot continue after that date, the repository may be archived.
+
 textlint-plugin-latex2e depends on [the LaTeX parser](https://github.com/tamuratak/latex-utensils) since v1.0.0!
 
 ## Installation
