@@ -32,7 +32,7 @@
     "npm": ">=10"
   },
   "dependencies": {
-    "@textlint/ast-node-types": "^12.0.0",
+    "@textlint/ast-node-types": "^15.0.0",
     "fp-ts": "^2.16.11",
     "latex-utensils": "^3.0.0"
   },
