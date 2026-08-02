@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@textlint/ast-tester": "12.6.1",
-    "@textlint/kernel": "12.6.1",
+    "@textlint/kernel": "15.8.0",
     "@textlint/textlint-plugin-markdown": "12.6.1",
     "@textlint/types": "12.6.1",
     "@types/jest": "30.0.0",
